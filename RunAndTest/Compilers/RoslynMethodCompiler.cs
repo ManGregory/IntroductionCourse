@@ -17,19 +17,18 @@ namespace RunAndTest.Compilers
     {
         public string EntryType { get; set; }
         public string EntryMethod { get; set; }
-        public ISourceCodeProvider SourceCodeProvider { get; set; }
         public IEnumerable<string> CompilationErrors { get; set; } = new List<string>();
 
-        public MethodInfo Compile()
+        public MethodInfo Compile(string sourceCode)
         {
-            return Compile(default);
+            return Compile(sourceCode, default);
         }
 
-        public MethodInfo Compile(CancellationToken cancellationToken)
+        public MethodInfo Compile(string sourceCode, CancellationToken cancellationToken)
         {
             MethodInfo methodInfo = null;
 
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(text: SourceCodeProvider.SourceCode, cancellationToken: cancellationToken);
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(text: sourceCode, cancellationToken: cancellationToken);
 
             string assemblyName = Path.GetRandomFileName();
             var refPaths = new[] {
@@ -68,9 +67,9 @@ namespace RunAndTest.Compilers
             return methodInfo;
         }
 
-        public async Task<MethodInfo> CompileAsync(CancellationToken cancellationToken)
+        public async Task<MethodInfo> CompileAsync(string sourceCode, CancellationToken cancellationToken)
         {
-            return await Task.Run(() => Compile(cancellationToken), cancellationToken);
+            return await Task.Run(() => Compile(sourceCode, cancellationToken));
         }
     }
 }

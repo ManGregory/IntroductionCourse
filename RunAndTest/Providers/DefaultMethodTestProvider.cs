@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RunAndTest.Providers
 {
-    public class DefaultMethodTestProvider : IMethodTestProvider
+    public class DefaultMethodTestProvider
     {
         public IEnumerable<IMethodTestInfo> MethodTests 
         { 

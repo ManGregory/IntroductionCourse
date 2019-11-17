@@ -1,4 +1,5 @@
 ﻿using RunAndTest.Compilers;
+using RunAndTest.DTO;
 using RunAndTest.Providers;
 using System.Collections.Generic;
 using System.Threading;
@@ -9,8 +10,7 @@ namespace RunAndTest.TestRunners
     public interface IMethodTestRunner
     {
         IMethodCompiler MethodCompiler { set; }
-        IMethodTestProvider MethodTestProvider { set; }
-        IEnumerable<string> Run();
-        Task<IEnumerable<string>> RunAsync(CancellationToken cancellationToken);
+        IEnumerable<string> Run(string sourceCode, IEnumerable<IMethodTestInfo> tests);
+        Task<IEnumerable<string>> RunAsync(string sourceCode, IEnumerable<IMethodTestInfo> tests, CancellationToken cancellationToken);
     }
 }

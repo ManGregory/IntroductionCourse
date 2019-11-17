@@ -13,7 +13,6 @@ namespace RunAndTest.TestRunners
     public class MethodTestRunner : IMethodTestRunner
     {
         public IMethodCompiler MethodCompiler { get; set; }
-        public IMethodTestProvider MethodTestProvider { get; set; }
 
         #region Message Builder
         private string BuildSuccessfullMessage(IMethodTestInfo test)
@@ -39,31 +38,31 @@ namespace RunAndTest.TestRunners
         #endregion
 
         private string Execute(MethodInfo testMethod, IMethodTestInfo test, CancellationToken cancellationToken)
-        {
+        {            
             cancellationToken.ThrowIfCancellationRequested();
             var actualResult = testMethod.Invoke(null, test.InputParameters);
             return Equals(actualResult, test.ExpectedResult) ? BuildSuccessfullMessage(test) : BuildErrorMessage(test, actualResult);
         }
 
-        private IEnumerable<string> ExecuteTests(MethodInfo testMethod, CancellationToken cancellationToken = default)
+        private IEnumerable<string> ExecuteTests(IEnumerable<IMethodTestInfo> tests, MethodInfo testMethod, CancellationToken cancellationToken = default)
         {
-            return new List<string>(MethodTestProvider.MethodTests.Select((test) => Execute(testMethod, test, cancellationToken)));
+            return new List<string>(tests.Select((test) => Execute(testMethod, test, cancellationToken)));
         }
 
-        public IEnumerable<string> Run()
+        public IEnumerable<string> Run(string sourceCode, IEnumerable<IMethodTestInfo> tests)
         {
-            var testMethod = MethodCompiler.Compile();
+            var testMethod = MethodCompiler.Compile(sourceCode);
             return testMethod == null
                 ? MethodCompiler.CompilationErrors
-                : ExecuteTests(testMethod);
+                : ExecuteTests(tests, testMethod);
         }
 
-        public async Task<IEnumerable<string>> RunAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>> RunAsync(string sourceCode, IEnumerable<IMethodTestInfo> tests, CancellationToken cancellationToken)
         {
-            var testMethod = await MethodCompiler.CompileAsync(cancellationToken);
+            var testMethod = await MethodCompiler.CompileAsync(sourceCode, cancellationToken);
             return testMethod == null
                 ? MethodCompiler.CompilationErrors
-                : await Task.Run(() => ExecuteTests(testMethod, cancellationToken), cancellationToken);           
+                : await Task.Run(() => ExecuteTests(tests, testMethod, cancellationToken));           
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using RunAndTest.Compilers;
 using RunAndTest.Providers;
 using RunAndTest.TestRunners;
-using RunAndTest.Utils;
 using System;
-using System.Linq;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,19 +11,18 @@ namespace RunAndTest
 
     class Program
     {
+        private static int timeout = 1000;
+        private static string filePath = @"D:\Programming\VSProjects\IntroductionC#\Example\HappyTicket.cs";
+
         public static void Main(string[] args)
-        {
-            const string filePath = @"D:\Programming\VSProjects\IntroductionC#\Example\HappyTicket.cs";
-            ISourceCodeProvider sourceCodeProvider = new FileSourceCodeProvider { FilePath = filePath };
+        {            
             IMethodCompiler methodCompiler = new RoslynMethodCompiler
             {
                 EntryMethod = "IsTicketHappy",
                 EntryType = "Lecture1.Program",
-                SourceCodeProvider = sourceCodeProvider
             };
             IMethodTestRunner methodTestRunner = new MethodTestRunner
             {
-                MethodTestProvider = new DefaultMethodTestProvider(),
                 MethodCompiler = methodCompiler
             };
 
@@ -32,15 +30,23 @@ namespace RunAndTest
             {
                 try
                 {
-                    cancellationToken.CancelAfter(3000);
+                    cancellationToken.CancelAfter(timeout);
                     RunTests(methodTestRunner, cancellationToken).Wait();
                 }
-                catch (AggregateException ex)
+                catch (TimeoutException ex)
+                {
+                    Console.WriteLine("Timeout exception");
+                }
+                catch (Exception ex)
                 {
                     if (cancellationToken.Token.IsCancellationRequested)
                     {
-                        Console.WriteLine("\rTimeout");
-                    }                 
+                        Console.WriteLine("Timeout");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Exception", ex);
+                    }
                 }
             }
 
@@ -50,22 +56,20 @@ namespace RunAndTest
         private static async Task RunTests(IMethodTestRunner methodTestRunner, CancellationTokenSource cancellationSource)
         {
             Console.WriteLine("Running");
-            var testRunTask = methodTestRunner.RunAsync(cancellationSource.Token);
+            string sourceCode = File.ReadAllText(filePath);
+            var testRunTask = methodTestRunner.RunAsync(sourceCode, new DefaultMethodTestProvider().MethodTests, cancellationSource.Token);
 
-            string symbol = "-";
-            while (!testRunTask.IsCompleted)
+            if (await Task.WhenAny(testRunTask, Task.Delay(timeout, cancellationSource.Token)) == testRunTask)
             {
-                Console.Write("\r" + symbol, 0);
-                if (symbol == "-") symbol = @"\";
-                else if (symbol == @"\") symbol = @"|";
-                else if (symbol == @"|") symbol = @"/";
-                else if (symbol == @"/") symbol = @"-";
-                Thread.Sleep(100);
+                await testRunTask;
+                foreach (var result in testRunTask.Result)
+                {
+                    Console.WriteLine(result);
+                }
             }
-
-            foreach (var result in testRunTask.Result)
+            else
             {
-                Console.WriteLine(result);
+                throw new TimeoutException("Timeout");
             }
         }
     }

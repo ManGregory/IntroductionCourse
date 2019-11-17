@@ -10,9 +10,8 @@ namespace RunAndTest.Compilers
     {
         string EntryType { set; }
         string EntryMethod { set; }
-        ISourceCodeProvider SourceCodeProvider { get; set; }
         IEnumerable<string> CompilationErrors { get; set; }
-        MethodInfo Compile();
-        Task<MethodInfo> CompileAsync(CancellationToken cancellationToken);
+        MethodInfo Compile(string sourceCode);
+        Task<MethodInfo> CompileAsync(string sourceCode, CancellationToken cancellationToken);
     }
 }
