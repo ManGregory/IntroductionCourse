@@ -1,7 +1,11 @@
 ﻿using RunAndTest.Compilers;
 using RunAndTest.Providers;
 using RunAndTest.TestRunners;
+using RunAndTest.Utils;
 using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace RunAndTest
 {
@@ -18,20 +22,51 @@ namespace RunAndTest
                 EntryType = "Lecture1.Program",
                 SourceCodeProvider = sourceCodeProvider
             };
-            IMethodTestRunner methodTestManager = new MethodTestRunner
+            IMethodTestRunner methodTestRunner = new MethodTestRunner
             {
                 MethodTestProvider = new DefaultMethodTestProvider(),
                 MethodCompiler = methodCompiler
             };
 
-            var results = methodTestManager.Run();
-            
-            foreach (var result in results)
+            using (var cancellationToken = new CancellationTokenSource())
             {
-                Console.WriteLine(result);
+                try
+                {
+                    cancellationToken.CancelAfter(3000);
+                    RunTests(methodTestRunner, cancellationToken).Wait();
+                }
+                catch (AggregateException ex)
+                {
+                    if (cancellationToken.Token.IsCancellationRequested)
+                    {
+                        Console.WriteLine("\rTimeout");
+                    }                 
+                }
             }
 
             Console.ReadKey();
+        }
+
+        private static async Task RunTests(IMethodTestRunner methodTestRunner, CancellationTokenSource cancellationSource)
+        {
+            Console.WriteLine("Running");
+            var testRunTask = methodTestRunner.RunAsync(cancellationSource.Token);
+
+            string symbol = "-";
+            while (!testRunTask.IsCompleted)
+            {
+                Console.Write("\r" + symbol, 0);
+                if (symbol == "-") symbol = @"\";
+                else if (symbol == @"\") symbol = @"|";
+                else if (symbol == @"|") symbol = @"/";
+                else if (symbol == @"/") symbol = @"-";
+                Thread.Sleep(100);
+            }
+
+            foreach (var result in testRunTask.Result)
+            {
+                Console.WriteLine(result);
+            }
         }
     }
 }

@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace RunAndTest.Compilers
 {
@@ -20,9 +22,14 @@ namespace RunAndTest.Compilers
 
         public MethodInfo Compile()
         {
+            return Compile(default);
+        }
+
+        public MethodInfo Compile(CancellationToken cancellationToken)
+        {
             MethodInfo methodInfo = null;
 
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(SourceCodeProvider.SourceCode);
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(text: SourceCodeProvider.SourceCode, cancellationToken: cancellationToken);
 
             string assemblyName = Path.GetRandomFileName();
             var refPaths = new[] {
@@ -40,7 +47,7 @@ namespace RunAndTest.Compilers
 
             using (var ms = new MemoryStream())
             {
-                EmitResult result = compilation.Emit(ms);
+                EmitResult result = compilation.Emit(peStream: ms, cancellationToken: cancellationToken);
 
                 if (!result.Success)
                 {
@@ -54,12 +61,16 @@ namespace RunAndTest.Compilers
                 {
                     ms.Seek(0, SeekOrigin.Begin);
                     Assembly assembly = AssemblyLoadContext.Default.LoadFromStream(ms);
-                    var type = assembly.GetType("Lecture1.Program");
-                    //var instance = assembly.CreateInstance("RoslynCompileSample.Writer");
-                    methodInfo = type.GetMember("IsTicketHappy").First() as MethodInfo;
+                    var type = assembly.GetType(EntryType);
+                    methodInfo = type.GetMember(EntryMethod).First() as MethodInfo;
                 }
             }
             return methodInfo;
+        }
+
+        public async Task<MethodInfo> CompileAsync(CancellationToken cancellationToken)
+        {
+            return await Task.Run(() => Compile(cancellationToken), cancellationToken);
         }
     }
 }
