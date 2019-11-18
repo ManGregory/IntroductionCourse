@@ -33,20 +33,16 @@ namespace RunAndTest
                     cancellationToken.CancelAfter(timeout);
                     RunTests(methodTestRunner, cancellationToken).Wait();
                 }
-                catch (TimeoutException ex)
+                catch (AggregateException ex)
                 {
-                    Console.WriteLine("Timeout exception");
-                }
-                catch (Exception ex)
-                {
-                    if (cancellationToken.Token.IsCancellationRequested)
+                    if (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TimeoutException)
                     {
                         Console.WriteLine("Timeout");
                     }
-                    else
-                    {
-                        Console.WriteLine("Exception", ex);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception", ex);
                 }
             }
 

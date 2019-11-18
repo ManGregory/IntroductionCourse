@@ -1,6 +1,5 @@
 ﻿using RunAndTest.Compilers;
 using RunAndTest.DTO;
-using RunAndTest.Providers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -38,10 +37,23 @@ namespace RunAndTest.TestRunners
         #endregion
 
         private string Execute(MethodInfo testMethod, IMethodTestInfo test, CancellationToken cancellationToken)
-        {            
+        {
             cancellationToken.ThrowIfCancellationRequested();
-            var actualResult = testMethod.Invoke(null, test.InputParameters);
-            return Equals(actualResult, test.ExpectedResult) ? BuildSuccessfullMessage(test) : BuildErrorMessage(test, actualResult);
+            var result = TryInvoke(testMethod, test);
+            if (result.hasException) test.AdditionalMessage = "There is an TargetInvocationException during performing of the test";
+            return Equals(result.actualResult, test.ExpectedResult) ? BuildSuccessfullMessage(test) : BuildErrorMessage(test, result.actualResult);
+        }
+
+        private static (object actualResult, bool hasException) TryInvoke(MethodInfo testMethod, IMethodTestInfo test)
+        {
+            try
+            {
+                return (testMethod.Invoke(null, test.InputParameters), false);
+            }
+            catch (TargetInvocationException)
+            {
+                return ("exception", true);
+            }
         }
 
         private IEnumerable<string> ExecuteTests(IEnumerable<IMethodTestInfo> tests, MethodInfo testMethod, CancellationToken cancellationToken = default)
