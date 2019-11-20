@@ -21,5 +21,7 @@ namespace WebLMS.Models
         public CodingTestType CodingTestType { get; set; }
         public string EntryType { get; set; }
         public string EntryMethodName { get; set; }
+        
+        public virtual Lecture Lecture { get; set; }
     }
 }

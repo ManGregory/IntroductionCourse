@@ -19,15 +19,15 @@ namespace WebLMS.Data
 
             SeedUsers(userManager);
 
-            context.Lectures.Add(new Models.Lecture()
+            var lecture = context.Lectures.Add(new Models.Lecture()
             {
                 Subject = "Простые типы данных и операции с ними",
                 Description = "Простые типы данных и операции с ними"
             });
 
-            context.CodingHomeworks.Add(new Models.CodingHomework()
+            var codingHomework = context.CodingHomeworks.Add(new Models.CodingHomework()
             {
-                LectureId = context.Lectures.Single().Id,
+                Lecture = lecture.Entity,
                 Subject = "Простые типы",
                 Description = "Написать программу",
                 TemplateCode = @"
@@ -51,7 +51,7 @@ namespace Lecture1
 
             context.CodingTests.Add(new Models.CodingTest()
             {
-                HomeworkId = context.CodingHomeworks.Single().Id,
+                CodingHomework = codingHomework.Entity,
                 Name = "1",
                 InputParameters = "123456",
                 ExpectedResult = "false"
@@ -59,7 +59,7 @@ namespace Lecture1
 
             context.CodingTests.Add(new Models.CodingTest()
             {
-                HomeworkId = context.CodingHomeworks.Single().Id,
+                CodingHomework = codingHomework.Entity,
                 Name = "2",
                 InputParameters = "123123",
                 ExpectedResult = "true"

@@ -30,7 +30,13 @@ namespace WebLMS
             services.AddDbContext<LMSDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<IdentityUser, IdentityRole>(options => 
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 3;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                })
                 .AddEntityFrameworkStores<LMSDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
