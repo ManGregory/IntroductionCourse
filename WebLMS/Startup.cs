@@ -37,7 +37,9 @@ namespace WebLMS
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireUppercase = false;
                 })
-                .AddEntityFrameworkStores<LMSDbContext>();
+                .AddDefaultUI()
+                .AddEntityFrameworkStores<LMSDbContext>()
+                .AddDefaultTokenProviders();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

@@ -73,8 +73,8 @@ namespace Lecture1
             if (userManager.FindByNameAsync("student").Result == null)
             {
                 IdentityUser user = new IdentityUser();
-                user.UserName = "normal";
-                user.Email = "user1@localhost";
+                user.UserName = "student@localhost";
+                user.Email = "student@localhost";
 
                 IdentityResult result = userManager.CreateAsync(user, "student").Result;
 
@@ -88,8 +88,8 @@ namespace Lecture1
             if (userManager.FindByNameAsync("admin").Result == null)
             {
                 IdentityUser user = new IdentityUser();
-                user.UserName = "user2";
-                user.Email = "user2@localhost";
+                user.UserName = "admin@localhost";
+                user.Email = "admin@localhost";
 
                 IdentityResult result = userManager.CreateAsync(user, "admin").Result;
 
