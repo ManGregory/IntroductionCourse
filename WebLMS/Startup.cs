@@ -31,16 +31,15 @@ namespace WebLMS
             services.AddDbContext<LMSDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<ApplicationUser, IdentityRole>(options => 
-                {
-                    options.Password.RequireDigit = false;
-                    options.Password.RequiredLength = 3;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                })
-                .AddDefaultUI()
-                .AddEntityFrameworkStores<LMSDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddDefaultIdentity<ApplicationUser>(options =>
+                    {
+                        options.Password.RequireDigit = false;
+                        options.Password.RequiredLength = 3;
+                        options.Password.RequireNonAlphanumeric = false;
+                        options.Password.RequireUppercase = false;
+                    })
+                    .AddRoles<IdentityRole>()
+                    .AddEntityFrameworkStores<LMSDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
