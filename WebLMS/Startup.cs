@@ -12,6 +12,7 @@ using WebLMS.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebLMS.Models;
 
 namespace WebLMS
 {
@@ -30,7 +31,7 @@ namespace WebLMS
             services.AddDbContext<LMSDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<IdentityUser, IdentityRole>(options => 
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => 
                 {
                     options.Password.RequireDigit = false;
                     options.Password.RequiredLength = 3;

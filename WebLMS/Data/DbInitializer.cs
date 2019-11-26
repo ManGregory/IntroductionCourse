@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebLMS.Models;
 
 namespace WebLMS.Data
 {
     public class DbInitializer
     {
-        public static void Initialize(LMSDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static void Initialize(LMSDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             if (context.Lectures.Any())
             {
@@ -68,11 +69,11 @@ namespace Lecture1
             context.SaveChanges();
         }
 
-        private static void SeedUsers(UserManager<IdentityUser> userManager)
+        private static void SeedUsers(UserManager<ApplicationUser> userManager)
         {
             if (userManager.FindByNameAsync("student").Result == null)
             {
-                IdentityUser user = new IdentityUser();
+                var user = new ApplicationUser();
                 user.UserName = "student@localhost";
                 user.Email = "student@localhost";
 
@@ -87,7 +88,7 @@ namespace Lecture1
 
             if (userManager.FindByNameAsync("admin").Result == null)
             {
-                IdentityUser user = new IdentityUser();
+                var user = new ApplicationUser();
                 user.UserName = "admin@localhost";
                 user.Email = "admin@localhost";
 

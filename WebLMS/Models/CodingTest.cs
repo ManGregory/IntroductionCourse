@@ -10,7 +10,7 @@ namespace WebLMS.Models
     {
         public int Id { get; set; }
         [ForeignKey("CodingHomework")]
-        public int HomeworkId { get; set; }
+        public int CodingHomeworkId { get; set; }
         public string Name { get; set; }
         public string InputParameters { get; set; }
         public string ExpectedResult { get; set; }

@@ -7,7 +7,7 @@ using WebLMS.Models;
 
 namespace WebLMS.Data
 {
-    public class LMSDbContext : IdentityDbContext
+    public class LMSDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Lecture> Lectures { get; set; }
         public DbSet<CodingHomework> CodingHomeworks { get; set; }

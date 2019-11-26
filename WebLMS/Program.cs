@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WebLMS.Data;
+using WebLMS.Models;
 
 namespace WebLMS
 {
@@ -29,7 +30,7 @@ namespace WebLMS
                 {
                     var context = services.GetRequiredService<LMSDbContext>();
                     DbInitializer.Initialize(context, 
-                        scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>(),
+                        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(),
                         scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>());
                 }
                 catch (Exception ex)
