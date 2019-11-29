@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebLMS.Models;
+using WebLMS.Identity;
 
 namespace WebLMS
 {
@@ -39,7 +40,8 @@ namespace WebLMS
                         options.Password.RequireUppercase = false;
                     })
                     .AddRoles<IdentityRole>()
-                    .AddEntityFrameworkStores<LMSDbContext>();
+                    .AddEntityFrameworkStores<LMSDbContext>()
+                    .AddClaimsPrincipalFactory<ExtendedUserClaimsPrincipalFactory>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

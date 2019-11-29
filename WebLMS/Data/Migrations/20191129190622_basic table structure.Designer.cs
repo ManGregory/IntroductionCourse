@@ -10,8 +10,8 @@ using WebLMS.Data;
 namespace WebLMS.Data.Migrations
 {
     [DbContext(typeof(LMSDbContext))]
-    [Migration("20191126213244_Basic table structure")]
-    partial class Basictablestructure
+    [Migration("20191129190622_basic table structure")]
+    partial class basictablestructure
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -99,10 +99,12 @@ namespace WebLMS.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -139,10 +141,12 @@ namespace WebLMS.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");

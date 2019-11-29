@@ -36,6 +36,12 @@ namespace WebLMS.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "My name")]
+            public string StudentName { get; set; }
+
+            [Display(Name = "My group")]
+            public string GroupName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -47,7 +53,9 @@ namespace WebLMS.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                StudentName = user.StudentName,
+                GroupName = user.Group
             };
         }
 
@@ -87,6 +95,11 @@ namespace WebLMS.Areas.Identity.Pages.Account.Manage
                     throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
                 }
             }
+
+            user.Group = Input.GroupName;
+            user.StudentName = Input.StudentName;
+
+            await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
