@@ -1,0 +1,85 @@
+﻿@model IEnumerable<IGrouping<int, WebLMS.Models.CodingHomework>>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Тема
+            </th>
+            <th>
+                Описание
+            </th>
+            <th>
+                Тип кодинга (метод или консоль)
+            </th>
+            <th>
+                Название класса
+            </th>
+            <th>
+                Название метода
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div id="accordion">
+    @foreach (var group in Model.Select(group => group))
+    {
+        <div class="card">
+            <div class="card-header" id="head+@group.Key">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#head-@group.Key" aria-expanded="true" aria-controls="head-@group.Key">
+                        @group.Select(h => h.Lecture.Subject).FirstOrDefault()
+                    </button>
+                </h5>
+            </div>        
+            <div id="head-@group.Key" class="collapse show" aria-labelledby="head+@group.Key" data-parent="#accordion">
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            @foreach (var item in group)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Subject)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CodingTestType)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.EntryType)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.EntryMethodName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Lecture.Id)
+                                    </td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

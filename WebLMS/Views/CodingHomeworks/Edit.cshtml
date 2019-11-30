@@ -1,0 +1,75 @@
+﻿@model WebLMS.Models.CodingHomework
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>CodingHomework</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit" class="form-inline">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group col-md-12">
+                <fieldset class="col-md-4">
+                    <label asp-for="LectureId" class="control-label"></label>
+                    <select asp-for="LectureId" class="form-control" asp-items="ViewBag.LectureId"></select>
+                    <span asp-validation-for="LectureId" class="text-danger"></span>
+                </fieldset>
+                <fieldset class="col-md-4">
+                    <label asp-for="Subject" class="control-label"></label>
+                    <input asp-for="Subject" class="form-control" />
+                    <span asp-validation-for="Subject" class="text-danger"></span>
+                </fieldset>
+                <fieldset class="col-md-4">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </fieldset>
+            </div>
+
+            <div class="form-group col-md-12">
+                <fieldset class="col-md-4">
+                    <label asp-for="CodingTestType" class="control-label"></label>
+                    <select asp-for="CodingTestType" class="form-control" asp-items="Html.GetEnumSelectList<CodingTestType>()">
+                    </select>
+                    <span asp-validation-for="CodingTestType" class="text-danger"></span>
+                </fieldset>
+                <fieldset class="col-md-4">
+                    <label asp-for="EntryType" class="control-label"></label>
+                    <input asp-for="EntryType" class="form-control" />
+                    <span asp-validation-for="EntryType" class="text-danger"></span>
+                </fieldset>
+                <fieldset class="col-md-4">
+                    <label asp-for="EntryMethodName" class="control-label"></label>
+                    <input asp-for="EntryMethodName" class="form-control" />
+                    <span asp-validation-for="EntryMethodName" class="text-danger"></span>
+                </fieldset>
+            </div>
+
+            <div class="form-group col-md-12">
+                <fieldset class="col-md-12">
+                    <label asp-for="TemplateCode" class="control-label"></label>
+                    <textarea rows="10" placeholder="What's up?" class="form-control col-md-12" style="min-width: 100%" asp-for="TemplateCode">
+                    </textarea>
+                    <span asp-validation-for="TemplateCode" class="text-danger"></span>
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
