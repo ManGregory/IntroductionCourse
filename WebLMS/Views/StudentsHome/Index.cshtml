@@ -1,0 +1,13 @@
+﻿@model IEnumerable<WebLMS.Models.ViewModel.StudentLectureViewModel>
+
+@foreach (var item in Model)
+{
+    <h2>@item.Title</h2>
+    <p>@item.Description</p>
+    @foreach (var homework in item.StudentHomeworks)
+    {
+        <h2>@homework.Title</h2>
+        <p>@homework.Description</p>
+        <hr />
+    }
+}

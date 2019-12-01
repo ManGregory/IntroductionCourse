@@ -56,7 +56,7 @@ namespace WebLMS
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Subject,Description,AvailableFrom,AvailableTo")] Lecture lecture)
+        public async Task<IActionResult> Create([Bind("Id,Number,Subject,Description,AvailableFrom,AvailableTo")] Lecture lecture)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +88,7 @@ namespace WebLMS
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Subject,Description,AvailableFrom,AvailableTo")] Lecture lecture)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Number,Subject,Description,AvailableFrom,AvailableTo")] Lecture lecture)
         {
             if (id != lecture.Id)
             {
