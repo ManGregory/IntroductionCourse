@@ -10,7 +10,7 @@ namespace RunAndTest.TestRunners
     public interface IMethodTestRunner
     {
         IMethodCompiler MethodCompiler { set; }
-        IEnumerable<string> Run(string sourceCode, IEnumerable<IMethodTestInfo> tests);
-        Task<IEnumerable<string>> RunAsync(string sourceCode, IEnumerable<IMethodTestInfo> tests, CancellationToken cancellationToken);
+        IDictionary<IMethodTestInfo, IMethodTestRunResult> Run(string sourceCode, IEnumerable<IMethodTestInfo> tests);
+        Task<IDictionary<IMethodTestInfo, IMethodTestRunResult>> RunAsync(string sourceCode, IEnumerable<IMethodTestInfo> tests, CancellationToken cancellationToken);
     }
 }

@@ -6,5 +6,6 @@
         public object ExpectedResult { get; set; }
         public object[] InputParameters { get; set; }
         public string Name { get; set; }
+        public bool IsCompilation { get; set; }
     }
 }

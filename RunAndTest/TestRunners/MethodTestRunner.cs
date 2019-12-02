@@ -1,5 +1,6 @@
 ﻿using RunAndTest.Compilers;
 using RunAndTest.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -14,67 +15,108 @@ namespace RunAndTest.TestRunners
         public IMethodCompiler MethodCompiler { get; set; }
 
         #region Message Builder
-        private string BuildSuccessfullMessage(IMethodTestInfo test)
-        {
-            return BuildMessage(test, true);
-        }
-
-        private string BuildErrorMessage(IMethodTestInfo test, object actualResult)
-        {
-            return BuildMessage(test, false, actualResult);
-        }
-
-        private string BuildMessage(IMethodTestInfo test, bool passed, object actualResult = null)
+        private string BuildMessage(IMethodTestInfo test, IMethodTestRunResult testRunResult)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Test {test.Name} {(passed ? "Passed" : "Failed")}");
+            bool isPassed = testRunResult.TestRunStatus == TestRunStatus.Passed;
+            sb.AppendLine($"Test {test.Name} {(isPassed ? "Passed" : "Failed")}");
             sb.AppendLine($"Input params: {string.Join(", ", test.InputParameters)}");
-            sb.AppendLine($"Expected result: {test.ExpectedResult}{(passed ? "" : $", but get {actualResult}")}");
-            if (!string.IsNullOrEmpty(test.AdditionalMessage)) sb.AppendLine($"Additional message: {test.AdditionalMessage}");
+            sb.AppendLine($"Expected result: {test.ExpectedResult}{(isPassed ? "" : $", but get {testRunResult.ActualResult}")}");
+            if (testRunResult.TestRunStatus == TestRunStatus.Exception) sb.AppendLine($"There was an exception during executing of the test");
 
             return sb.ToString();
         }
         #endregion
 
-        private string Execute(MethodInfo testMethod, IMethodTestInfo test, CancellationToken cancellationToken)
+        private IMethodTestRunResult Execute(MethodInfo testMethod, IMethodTestInfo test, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var result = TryInvoke(testMethod, test);
-            if (result.hasException) test.AdditionalMessage = "There is an TargetInvocationException during performing of the test";
-            return Equals(result.actualResult, test.ExpectedResult) ? BuildSuccessfullMessage(test) : BuildErrorMessage(test, result.actualResult);
+            var testRunResult = TryInvoke(testMethod, test);
+            if (testRunResult.TestRunStatus != TestRunStatus.Exception)
+            {
+                testRunResult.TestRunStatus = Equals(testRunResult.ActualResult, test.ExpectedResult) ? TestRunStatus.Passed : TestRunStatus.Failed;
+            }
+            testRunResult.Message = BuildMessage(test, testRunResult);
+            return testRunResult;
         }
 
-        private static (object actualResult, bool hasException) TryInvoke(MethodInfo testMethod, IMethodTestInfo test)
+        private IMethodTestRunResult TryInvoke(MethodInfo testMethod, IMethodTestInfo test)
         {
+            var result = new MethodTestRunResult();
             try
             {
-                return (testMethod.Invoke(null, test.InputParameters), false);
+                result.ActualResult = testMethod.Invoke(null, test.InputParameters);
             }
             catch (TargetInvocationException)
             {
-                return ("exception", true);
+                result.TestRunStatus = TestRunStatus.Exception;
             }
+            return result;
         }
 
-        private IEnumerable<string> ExecuteTests(IEnumerable<IMethodTestInfo> tests, MethodInfo testMethod, CancellationToken cancellationToken = default)
+        private IDictionary<IMethodTestInfo, IMethodTestRunResult> ExecuteTests(IEnumerable<IMethodTestInfo> tests, MethodInfo testMethod, CancellationToken cancellationToken = default)
         {
-            return new List<string>(tests.Select((test) => Execute(testMethod, test, cancellationToken)));
+            var testResults = new Dictionary<IMethodTestInfo, IMethodTestRunResult>();
+            foreach (var test in tests)
+            {
+                testResults.Add(test, Execute(testMethod, test, cancellationToken));
+            }
+            return testResults;
         }
 
-        public IEnumerable<string> Run(string sourceCode, IEnumerable<IMethodTestInfo> tests)
+        private (IMethodTestInfo test, IMethodTestRunResult run, MethodInfo testMethod) TryCompile(string sourceCode)
         {
             var testMethod = MethodCompiler.Compile(sourceCode);
-            return testMethod == null
-                ? MethodCompiler.CompilationErrors
-                : ExecuteTests(tests, testMethod);
+            var compilationTest = new MethodTestInfo() { IsCompilation = true };
+            var testRun = new MethodTestRunResult()
+            {
+                TestRunStatus = testMethod == null ? TestRunStatus.CompilationFailed : TestRunStatus.Passed,
+                Message = string.Join(Environment.NewLine, MethodCompiler.CompilationErrors)
+            };
+            return (compilationTest, testRun, testMethod);
         }
 
-        public async Task<IEnumerable<string>> RunAsync(string sourceCode, IEnumerable<IMethodTestInfo> tests, CancellationToken cancellationToken)
+        private async Task<(IMethodTestInfo test, IMethodTestRunResult run, MethodInfo testMethod)> TryCompileAsync(string sourceCode, CancellationToken token)
         {
-            var testMethod = await MethodCompiler.CompileAsync(sourceCode, cancellationToken);
-            return testMethod == null
-                ? MethodCompiler.CompilationErrors
-                : await Task.Run(() => ExecuteTests(tests, testMethod, cancellationToken));           
+            var testMethod = await MethodCompiler.CompileAsync(sourceCode, token);
+            var compilationTest = new MethodTestInfo() { IsCompilation = true };
+            var testRun = new MethodTestRunResult()
+            {
+                TestRunStatus = testMethod == null ? TestRunStatus.CompilationFailed : TestRunStatus.Passed,
+                Message = string.Join(Environment.NewLine, MethodCompiler.CompilationErrors)
+            };
+            return (compilationTest, testRun, testMethod);
+        }
+
+        public IDictionary<IMethodTestInfo, IMethodTestRunResult> Run(string sourceCode, IEnumerable<IMethodTestInfo> tests)
+        {
+            var testResults = new Dictionary<IMethodTestInfo, IMethodTestRunResult>();
+            var compilationResult = TryCompile(sourceCode);
+            testResults.Add(compilationResult.test, compilationResult.run);
+            if (compilationResult.testMethod != null)
+            {
+                foreach (var testAndRun in ExecuteTests(tests, compilationResult.testMethod))
+                {
+                    testResults.Add(testAndRun.Key, testAndRun.Value);
+                }
+            }
+            return testResults;
+        }
+
+        public async Task<IDictionary<IMethodTestInfo, IMethodTestRunResult>> RunAsync(string sourceCode, IEnumerable<IMethodTestInfo> tests, CancellationToken cancellationToken)
+        {
+            var testResults = new Dictionary<IMethodTestInfo, IMethodTestRunResult>();
+            var compilationResult = TryCompile(sourceCode);
+            testResults.Add(compilationResult.test, compilationResult.run);
+            if (compilationResult.testMethod != null)
+            {
+                var execTestResults = await Task.Run(() => ExecuteTests(tests, compilationResult.testMethod));
+                foreach (var testAndRun in execTestResults)
+                {
+                    testResults.Add(testAndRun.Key, testAndRun.Value);
+                }
+            }
+            return testResults;    
         }
     }
 }

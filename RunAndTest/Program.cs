@@ -11,7 +11,7 @@ namespace RunAndTest
 
     class Program
     {
-        private static int timeout = 1000;
+        private static int timeout = 10000;
         private static string filePath = @"D:\Programming\VSProjects\IntroductionC#\Example\HappyTicket.cs";
 
         public static void Main(string[] args)
@@ -60,7 +60,7 @@ namespace RunAndTest
                 await testRunTask;
                 foreach (var result in testRunTask.Result)
                 {
-                    Console.WriteLine(result);
+                    Console.WriteLine(result.Value.Message);
                 }
             }
             else

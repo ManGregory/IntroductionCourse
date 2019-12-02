@@ -19,15 +19,6 @@ namespace WebLMS.Controllers
 
         public IActionResult Index()
         {
-            /*var studentsHomeView = _context.Lectures
-                .Join(_context.CodingHomeworks, 
-                    lecture => lecture.Id, 
-                    coding => coding.LectureId, 
-                    (lecture, coding) => new { Lecture = lecture, Coding = coding })
-                .ToList()
-                .GroupBy(lec => lec.Lecture.Id)
-                .Select()
-                .ToList();*/
             var lectures = _context.Lectures.Select(lec => new StudentLectureViewModel 
             { 
                 Id = lec.Id, 
