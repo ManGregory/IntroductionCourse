@@ -1,0 +1,49 @@
+﻿@model WebLMS.Models.ViewModel.StudentCodingHomeworkViewModel
+
+<h2>@Model.Subject</h2>
+<hr />
+<p>@Model.Description</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <form class="form-inline">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="HomeworkId" />
+            
+            <div class="form-group col-md-12">
+                <fieldset class="col-md-12">
+                    <label asp-for="TemplateCode" class="control-label"></label>
+                    <textarea rows="10" id="sourceCode" class="form-control col-md-12" style="min-width: 100%" asp-for="TemplateCode">
+                    </textarea>
+                    <span asp-validation-for="TemplateCode" class="text-danger"></span>
+                </fieldset>
+            </div>
+
+            <div class="form-group">
+                <input type="button" id="sendSourceCode" value="Отправить на проверку" class="btn btn-primary" />
+            </div>
+        </form>
+        <div id="testResult"></div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @{ await Html.RenderPartialAsync("SourceCodeScriptsPartial"); }
+    <script>
+        $('#sendSourceCode').click(function () {
+            $.ajax({
+                type: 'POST',
+                url: '/StudentCodingHomework/TestUserSourceCode',
+                data: {
+                    'id': @Model.HomeworkId,
+                    'sourceCode': editor.getValue()
+                }
+            })
+            .done(function (result) {
+                $('#testResult').html(result);
+            });
+        });
+    </script>
+}

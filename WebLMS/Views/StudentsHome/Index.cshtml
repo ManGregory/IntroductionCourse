@@ -6,8 +6,9 @@
     <p>@item.Description</p>
     @foreach (var homework in item.StudentHomeworks)
     {
-        <h2>@homework.Title</h2>
-        <p>@homework.Description</p>
+        @*<h2>@homework.Title</h2>
+        <p>@homework.Description</p>*@
+        <a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id">@homework.Title</a>
         <hr />
     }
 }

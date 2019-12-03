@@ -11,5 +11,7 @@ namespace WebLMS.Models
         public virtual ApplicationUser User { get; set; }
         public virtual CodingHomework CodingHomework { get; set; }
         public string SourceCode { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
     }
 }
