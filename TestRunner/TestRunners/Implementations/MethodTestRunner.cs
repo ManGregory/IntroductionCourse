@@ -1,14 +1,16 @@
-﻿using RunAndTest.Compilers;
-using RunAndTest.DTO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TestRunner.CommonTypes;
+using TestRunner.CommonTypes.Implementations;
+using TestRunner.CommonTypes.Interfaces;
+using TestRunner.Compilers.Interfaces;
+using TestRunner.TestRunners.Interfaces;
 
-namespace RunAndTest.TestRunners
+namespace TestRunner.TestRunners.Implementations
 {
     public class MethodTestRunner : IMethodTestRunner
     {
@@ -116,7 +118,7 @@ namespace RunAndTest.TestRunners
                     testResults.Add(testAndRun.Key, testAndRun.Value);
                 }
             }
-            return testResults;    
+            return testResults;
         }
     }
 }

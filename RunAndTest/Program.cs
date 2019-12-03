@@ -1,10 +1,12 @@
-﻿using RunAndTest.Compilers;
-using RunAndTest.Providers;
-using RunAndTest.TestRunners;
+﻿using RunAndTest.Providers;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using TestRunner.Compilers.Implementations;
+using TestRunner.Compilers.Interfaces;
+using TestRunner.TestRunners.Implementations;
+using TestRunner.TestRunners.Interfaces;
 
 namespace RunAndTest
 {

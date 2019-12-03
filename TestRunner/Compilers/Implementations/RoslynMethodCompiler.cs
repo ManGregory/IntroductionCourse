@@ -1,17 +1,18 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using RunAndTest.Providers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TestRunner.Compilers.Interfaces;
 
-namespace RunAndTest.Compilers
+namespace TestRunner.Compilers.Implementations
 {
     public class RoslynMethodCompiler : IMethodCompiler
     {

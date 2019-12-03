@@ -1,6 +1,7 @@
-﻿using RunAndTest.DTO;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using TestRunner.CommonTypes.Implementations;
+using TestRunner.CommonTypes.Interfaces;
 
 namespace RunAndTest.Providers
 {

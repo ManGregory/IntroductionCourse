@@ -1,4 +1,9 @@
-﻿namespace RunAndTest.DTO
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using TestRunner.CommonTypes.Interfaces;
+
+namespace TestRunner.CommonTypes.Implementations
 {
     public class MethodTestInfo : IMethodTestInfo
     {

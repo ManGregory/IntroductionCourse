@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using TestRunner.CommonTypes.Interfaces;
 
-namespace RunAndTest.DTO
+namespace TestRunner.CommonTypes.Implementations
 {
     public class MethodTestRunResult : IMethodTestRunResult
     {

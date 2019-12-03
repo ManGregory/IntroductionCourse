@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunAndTest", "RunAndTest\RunAndTest.csproj", "{7701A09A-06C8-4688-85E6-8E4BCC3C4B63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebLMS", "WebLMS\WebLMS.csproj", "{23D8DDE8-27A1-4D1D-A796-0A9C10CE2822}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebLMS", "WebLMS\WebLMS.csproj", "{23D8DDE8-27A1-4D1D-A796-0A9C10CE2822}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRunner", "TestRunner\TestRunner.csproj", "{5772ACDD-EF9B-4E97-B07B-25A9D1A04150}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{23D8DDE8-27A1-4D1D-A796-0A9C10CE2822}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23D8DDE8-27A1-4D1D-A796-0A9C10CE2822}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23D8DDE8-27A1-4D1D-A796-0A9C10CE2822}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5772ACDD-EF9B-4E97-B07B-25A9D1A04150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5772ACDD-EF9B-4E97-B07B-25A9D1A04150}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5772ACDD-EF9B-4E97-B07B-25A9D1A04150}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5772ACDD-EF9B-4E97-B07B-25A9D1A04150}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,11 +1,10 @@
-﻿using RunAndTest.Compilers;
-using RunAndTest.DTO;
-using RunAndTest.Providers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using TestRunner.CommonTypes.Interfaces;
+using TestRunner.Compilers.Interfaces;
 
-namespace RunAndTest.TestRunners
+namespace TestRunner.TestRunners.Interfaces
 {
     public interface IMethodTestRunner
     {

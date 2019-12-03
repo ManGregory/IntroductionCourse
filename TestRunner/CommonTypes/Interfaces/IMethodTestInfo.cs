@@ -1,4 +1,4 @@
-﻿namespace RunAndTest.DTO
+﻿namespace TestRunner.CommonTypes.Interfaces
 {
     public interface IMethodTestInfo
     {

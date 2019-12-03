@@ -1,10 +1,9 @@
-﻿using RunAndTest.Providers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RunAndTest.Compilers
+namespace TestRunner.Compilers.Interfaces
 {
     public interface IMethodCompiler
     {
