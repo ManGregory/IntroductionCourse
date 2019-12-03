@@ -4,19 +4,23 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using TestRunner.CommonTypes;
 
 namespace WebLMS.Models
 {
     public class CodingHomeworkTestRun
     {
         public int Id { get; set; }
+        public int CodingHomeworkRunId { get; set; }
         public int CodingTestId { get; set; }
-        public virtual ApplicationUser User { get; set; }
-        public string SourceCode { get; set; }
         public string Result { get; set; }
+        public string Message { get; set; }
+        public TestRunStatus TestRunStatus { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
+        public bool IsCompilation { get; set; }
 
+        public virtual CodingHomeworkRun CodingHomeworkRun { get; set; }
         public virtual CodingTest CodingTest { get; set; }
     }
 }

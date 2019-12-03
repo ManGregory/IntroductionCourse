@@ -12,6 +12,7 @@ namespace WebLMS.Data
         public DbSet<Lecture> Lectures { get; set; }
         public DbSet<CodingHomework> CodingHomeworks { get; set; }
         public DbSet<CodingTest> CodingTests { get; set; }
+        public DbSet<CodingHomeworkRun> CodingHomeworkRuns { get; set; }
         public DbSet<CodingHomeworkTestRun> CodingHomeworkTestRuns { get; set; }
 
         public LMSDbContext(DbContextOptions<LMSDbContext> options)
