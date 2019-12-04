@@ -24,7 +24,7 @@ namespace TestRunner.TestRunners.Implementations
             sb.AppendLine($"Test {test.Name} {(isPassed ? "Passed" : "Failed")}");
             sb.AppendLine($"Input params: {string.Join(", ", test.InputParameters)}");
             sb.AppendLine($"Expected result: {test.ExpectedResult}{(isPassed ? "" : $", but get {testRunResult.ActualResult}")}");
-            if (testRunResult.TestRunStatus == TestRunStatus.Exception) sb.AppendLine($"There was an exception during executing of the test");
+            if (testRunResult.TestRunStatus == TestRunStatus.TargetException) sb.AppendLine($"There was an exception during executing of the test");
 
             return sb.ToString();
         }
@@ -34,7 +34,7 @@ namespace TestRunner.TestRunners.Implementations
         {
             cancellationToken.ThrowIfCancellationRequested();
             var testRunResult = TryInvoke(testMethod, test);
-            if (testRunResult.TestRunStatus != TestRunStatus.Exception)
+            if (testRunResult.TestRunStatus != TestRunStatus.TargetException)
             {
                 testRunResult.TestRunStatus = Equals(testRunResult.ActualResult, test.ExpectedResult) ? TestRunStatus.Passed : TestRunStatus.Failed;
             }
@@ -49,9 +49,10 @@ namespace TestRunner.TestRunners.Implementations
             {
                 result.ActualResult = testMethod.Invoke(null, test.InputParameters);
             }
-            catch (TargetInvocationException)
+            catch (Exception ex)
             {
-                result.TestRunStatus = TestRunStatus.Exception;
+                result.TestRunStatus = ex is TargetInvocationException ? TestRunStatus.TargetException : TestRunStatus.UnknownException;
+                result.Exception = ex;
             }
             return result;
         }

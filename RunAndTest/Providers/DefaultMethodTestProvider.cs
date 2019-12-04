@@ -13,7 +13,7 @@ namespace RunAndTest.Providers
             {
                 return new MethodTestInfo[]
                 {
-                    new MethodTestInfo() { Name = "1", InputParameters = new object[] { 123456 }, ExpectedResult = false },
+                    new MethodTestInfo() { Name = "1", InputParameters = new object[] { "123456" }, ExpectedResult = false },
                     new MethodTestInfo() { Name = "1", InputParameters = new object[] { 123123 }, ExpectedResult = true },
                     new MethodTestInfo() { Name = "1", InputParameters = new object[] { 678852 }, ExpectedResult = false },
                     new MethodTestInfo() { Name = "1", InputParameters = new object[] { 31548 }, ExpectedResult = false },

@@ -1,4 +1,5 @@
-﻿using TestRunner.CommonTypes.Interfaces;
+﻿using System;
+using TestRunner.CommonTypes.Interfaces;
 
 namespace TestRunner.CommonTypes.Implementations
 {
@@ -7,5 +8,6 @@ namespace TestRunner.CommonTypes.Implementations
         public TestRunStatus TestRunStatus { get; set; }
         public object ActualResult { get; set; }
         public string Message { get; set; }
+        public Exception Exception { get; set; }
     }
 }

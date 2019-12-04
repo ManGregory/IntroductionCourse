@@ -5,6 +5,7 @@
         Passed,
         Failed,
         CompilationFailed,
-        Exception
+        TargetException,
+        UnknownException
     }
 }
