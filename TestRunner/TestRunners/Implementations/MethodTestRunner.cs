@@ -109,7 +109,7 @@ namespace TestRunner.TestRunners.Implementations
         public async Task<IDictionary<IMethodTestInfo, IMethodTestRunResult>> RunAsync(string sourceCode, IEnumerable<IMethodTestInfo> tests, CancellationToken cancellationToken)
         {
             var testResults = new Dictionary<IMethodTestInfo, IMethodTestRunResult>();
-            var compilationResult = TryCompile(sourceCode);
+            var compilationResult = await TryCompileAsync(sourceCode, cancellationToken);
             testResults.Add(compilationResult.test, compilationResult.run);
             if (compilationResult.testMethod != null)
             {

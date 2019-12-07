@@ -15,6 +15,7 @@ using TestRunner.TestRunners.Interfaces;
 using WebLMS.Data;
 using WebLMS.Models;
 using WebLMS.Models.ViewModel;
+using WebLMS.Services;
 
 namespace WebLMS.Controllers
 {
@@ -56,56 +57,10 @@ namespace WebLMS.Controllers
         [HttpPost]
         public async Task<IActionResult> TestUserSourceCode(int id, string sourceCode)
         {
-            var codingHomework = await _context.CodingHomeworks.FirstOrDefaultAsync(ch => ch.Id == id);
-            var codingTests = await _context.CodingTests.Where(test => test.CodingHomeworkId == codingHomework.Id).ToListAsync();
-            string result = RunTests(sourceCode, codingHomework, codingTests);
+            var testManagerService = new TestManagerService(_context, id);
+            var testResult = await testManagerService.Run(sourceCode);
+            string result = string.Join(Environment.NewLine, testResult.Values.Select(res => res.Message));
             return new JsonResult(result);
-        }
-
-        private string RunTests(string sourceCode, CodingHomework codingHomework, List<CodingTest> codingTests)
-        {
-            IMethodCompiler methodCompiler = new RoslynMethodCompiler
-            {
-                EntryMethod = codingHomework.EntryMethodName,
-                EntryType = codingHomework.EntryType,
-            };
-            IMethodTestRunner methodTestRunner = new MethodTestRunner
-            {
-                MethodCompiler = methodCompiler
-            };
-            var tests = ConvertToCommonTests(codingTests);
-            var result = methodTestRunner.Run(sourceCode, tests);
-
-            return string.Join(Environment.NewLine, result.Values.Select(res => res.Message));
-        }
-
-        private IEnumerable<IMethodTestInfo> ConvertToCommonTests(IEnumerable<CodingTest> codingTests)
-        {
-            return codingTests.Select(ct => new MethodTestInfo()
-            {
-                InputParameters = Convert(ct.InputParameters),
-                ExpectedResult = Convert(ct.ExpectedResult)[0]
-            });
-        }
-
-        private object[] Convert(string param)
-        {
-            var json = JObject.Parse(param);
-            var result = new List<object>();
-            foreach (var x in json)
-            {
-                object value = null;
-                if (x.Key == "int")
-                {
-                    value = (int)x.Value;
-                }
-                else if (x.Key == "bool")
-                {
-                    value = (bool)x.Value;
-                }
-                result.Add(value);
-            }
-            return result.ToArray();
         }
 
         private async Task<ApplicationUser> GetCurrentUser()

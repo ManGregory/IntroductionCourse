@@ -1,10 +1,10 @@
 ﻿using RunAndTest.Providers;
 using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+using TestRunner.CommonTypes.Implementations;
 using TestRunner.Compilers.Implementations;
 using TestRunner.Compilers.Interfaces;
+using TestRunner.TestManagers.Implementations;
 using TestRunner.TestRunners.Implementations;
 using TestRunner.TestRunners.Interfaces;
 
@@ -13,11 +13,11 @@ namespace RunAndTest
 
     class Program
     {
-        private static int timeout = 10000;
+        private static int timeout = 1000;
         private static string filePath = @"D:\Programming\VSProjects\IntroductionC#\Example\HappyTicket.cs";
 
         public static void Main(string[] args)
-        {            
+        {
             IMethodCompiler methodCompiler = new RoslynMethodCompiler
             {
                 EntryMethod = "IsTicketHappy",
@@ -28,46 +28,44 @@ namespace RunAndTest
                 MethodCompiler = methodCompiler
             };
 
-            using (var cancellationToken = new CancellationTokenSource())
+            var testManager = new MethodTestManager<MethodTestInfo>()
             {
-                try
-                {
-                    cancellationToken.CancelAfter(timeout);
-                    RunTests(methodTestRunner, cancellationToken).Wait();
-                }
-                catch (AggregateException ex)
-                {
-                    if (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TimeoutException)
-                    {
-                        Console.WriteLine("Timeout");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Exception", ex);
-                }
-            }
+                Timeout = timeout,
+                TestInfoProvider = new DefaultMethodTestProvider(),
+                SourceCode = File.ReadAllText(filePath),
+                MethodTestRunner = methodTestRunner
+            };
+            Run(testManager);
 
             Console.ReadKey();
         }
 
-        private static async Task RunTests(IMethodTestRunner methodTestRunner, CancellationTokenSource cancellationSource)
+        private static void Run(MethodTestManager<MethodTestInfo> testManager)
         {
-            Console.WriteLine("Running");
-            string sourceCode = File.ReadAllText(filePath);
-            var testRunTask = methodTestRunner.RunAsync(sourceCode, new DefaultMethodTestProvider().MethodTests, cancellationSource.Token);
-
-            if (await Task.WhenAny(testRunTask, Task.Delay(timeout, cancellationSource.Token)) == testRunTask)
+            var task = testManager.RunAsync();
+            Console.WriteLine("Press space key to cancel");
+            var key = Console.ReadKey();
+            if (key.Key == ConsoleKey.Spacebar)
             {
-                await testRunTask;
-                foreach (var result in testRunTask.Result)
-                {
-                    Console.WriteLine(result.Value.Message);
-                }
+                testManager.Cancel();
             }
             else
             {
-                throw new TimeoutException("Timeout");
+                if (testManager.IsTimedOut)
+                {
+                    Console.WriteLine("Timeout");
+                }
+                else if (testManager.Exception != null)
+                {
+                    Console.WriteLine(testManager.Exception);
+                }
+                else
+                {
+                    foreach (var result in task.Result)
+                    {
+                        Console.WriteLine(result.Value.Message);
+                    }
+                }
             }
         }
     }
