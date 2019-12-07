@@ -12,6 +12,7 @@ using TestRunner.TestRunners.Implementations;
 using TestRunner.TestRunners.Interfaces;
 using WebLMS.Data;
 using WebLMS.Models;
+using WebLMS.Services.TestManager;
 using WebLMS.TestManager;
 using WebLMS.TestManager.Providers;
 
@@ -44,7 +45,7 @@ namespace WebLMS.Services
                 MethodCompiler = methodCompiler
             };
             var methodTestInfoProvider = new DbMethodTestInfoProvider(_context, _homeworkId);
-            methodTestInfoProvider.ConvertFunction = ConvertToCommonTest;
+            methodTestInfoProvider.ConvertFunction = JsonConverter.ConvertToCommonTest;
             return new DbTestManager
             {
                 Timeout = timeout,
@@ -52,75 +53,55 @@ namespace WebLMS.Services
                 TestInfoProvider = methodTestInfoProvider,
                 MethodTestRunner = methodTestRunner
             };
-        }
+        }        
 
-        private IMethodTestInfo ConvertToCommonTest(CodingTest codingTest)
+        private async Task StoreResultsAsync(string sourceCode, IDictionary<IMethodTestInfo, IMethodTestRunResult> results, DateTime startTime, DateTime endTime)
         {
-            return new MethodTestInfo()
+            var codingHomeworkRun = new CodingHomeworkRun()
             {
-                Id = codingTest.Id,
-                InputParameters = Convert(codingTest.InputParameters),
-                ExpectedResult = Convert(codingTest.ExpectedResult)[0]
+                User = _currentUser,
+                CodingHomework = _context.CodingHomeworks.FirstOrDefault(hw => hw.Id == _homeworkId),
+                SourceCode = sourceCode,
+                StartTime = startTime,
+                EndTime = endTime
             };
-        }
-
-        private object[] Convert(string param)
-        {
-            var json = JObject.Parse(param);
-            var result = new List<object>();
-            foreach (var x in json)
-            {
-                object value = null;
-                if (x.Key == "int")
-                {
-                    value = (int)x.Value;
-                }
-                else if (x.Key == "bool")
-                {
-                    value = (bool)x.Value;
-                }
-                result.Add(value);
-            }
-            return result.ToArray();
-        }
-
-        private async Task StoreResultsAsync(string sourceCode, IDictionary<IMethodTestInfo, IMethodTestRunResult> results)
-        {            
+            _context.Add(codingHomeworkRun);
             foreach (var result in results)
-            {
-                var codingHomeworkRun = new CodingHomeworkRun()
-                {
-                    User = _currentUser,
-                    CodingHomework = _context.CodingHomeworks.FirstOrDefault(hw => hw.Id == _homeworkId),
-                    SourceCode = sourceCode
-                };
+            {                
                 var testRun = new CodingHomeworkTestRun()
                 {
                     CodingHomeworkRun = codingHomeworkRun,
-                    CodingTest = GetCodingTest(result.Key),
+                    CodingTest = GetCodingTest(result),
                     Result = result.Value.ActualResult?.ToString() ?? string.Empty,
                     Message = result.Value.Message,
                     TestRunStatus = result.Value.TestRunStatus,
-                    IsCompilation = result.Key.IsCompilation
-                };
-                _context.Add(codingHomeworkRun);
-                _context.Add(testRun);                
+                    IsCompilation = result.Key.IsCompilation,
+                    StartTime = result.Value.StartTime,
+                    EndTime = result.Value.EndTime
+                };                
+                _context.Add(testRun);
             };
             await _context.SaveChangesAsync();
         }
 
-        private CodingTest GetCodingTest(IMethodTestInfo key)
+        private CodingTest GetCodingTest(KeyValuePair<IMethodTestInfo, IMethodTestRunResult> pair)
         {
-            var codingTest = new CodingTest();
-            if (key.IsCompilation)
+            CodingTest codingTest;
+            if (pair.Key.IsCompilation || pair.Value.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Timeout)
             {
-                codingTest.CodingHomeworkId = _homeworkId;
-                codingTest.Name = "Compilation";
-                _context.Add(codingTest);
+                string name = pair.Key.IsCompilation ? "Compilation" : "Timeout";
+                codingTest = _context.CodingTests.FirstOrDefault(ct => ct.CodingHomeworkId == _homeworkId && ct.Name == name);
+                if (codingTest == null)
+                {
+                    codingTest = new CodingTest();
+                    codingTest.CodingHomeworkId = _homeworkId;
+                    codingTest.Name = name;
+                    _context.Add(codingTest);
+                }
             }
             else
             {
-                codingTest = _context.CodingTests.FirstOrDefault(ct => ct.Id == key.Id);
+                codingTest = _context.CodingTests.FirstOrDefault(ct => ct.Id == pair.Key.Id);
             }
             return codingTest;
         }
@@ -129,8 +110,10 @@ namespace WebLMS.Services
         {
             var homework = await _context.CodingHomeworks.FirstOrDefaultAsync(homework => homework.Id == _homeworkId);
             dbTestManager = CreateDbTestManager(sourceCode, homework.EntryMethodName, homework.EntryType);
+            var startTime = DateTime.Now;
             var results = await dbTestManager.RunAsync();
-            await StoreResultsAsync(sourceCode, results);
+            var endTime = DateTime.Now;
+            await StoreResultsAsync(sourceCode, results, startTime, endTime);
             return results;
         }
 

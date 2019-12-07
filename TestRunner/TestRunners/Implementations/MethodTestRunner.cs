@@ -32,7 +32,7 @@ namespace TestRunner.TestRunners.Implementations
 
         private IMethodTestRunResult Execute(MethodInfo testMethod, IMethodTestInfo test, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();            
             var testRunResult = TryInvoke(testMethod, test);
             if (testRunResult.TestRunStatus != TestRunStatus.TargetException)
             {
@@ -47,12 +47,17 @@ namespace TestRunner.TestRunners.Implementations
             var result = new MethodTestRunResult();
             try
             {
+                result.StartTime = DateTime.Now;
                 result.ActualResult = testMethod.Invoke(null, test.InputParameters);
             }
             catch (Exception ex)
             {
                 result.TestRunStatus = ex is TargetInvocationException ? TestRunStatus.TargetException : TestRunStatus.UnknownException;
                 result.Exception = ex;
+            }
+            finally
+            {
+                result.EndTime = DateTime.Now;
             }
             return result;
         }
@@ -81,12 +86,15 @@ namespace TestRunner.TestRunners.Implementations
 
         private async Task<(IMethodTestInfo test, IMethodTestRunResult run, MethodInfo testMethod)> TryCompileAsync(string sourceCode, CancellationToken token)
         {
+            var startTime = DateTime.Now;
             var testMethod = await MethodCompiler.CompileAsync(sourceCode, token);
             var compilationTest = new MethodTestInfo() { IsCompilation = true };
             var testRun = new MethodTestRunResult()
             {
                 TestRunStatus = testMethod == null ? TestRunStatus.CompilationFailed : TestRunStatus.Passed,
-                Message = string.Join(Environment.NewLine, MethodCompiler.CompilationErrors)
+                Message = string.Join(Environment.NewLine, MethodCompiler.CompilationErrors),
+                StartTime = startTime,
+                EndTime = DateTime.Now
             };
             return (compilationTest, testRun, testMethod);
         }

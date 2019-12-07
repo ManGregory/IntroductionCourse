@@ -9,5 +9,7 @@ namespace TestRunner.CommonTypes.Implementations
         public object ActualResult { get; set; }
         public string Message { get; set; }
         public Exception Exception { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
     }
 }

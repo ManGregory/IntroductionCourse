@@ -11,5 +11,6 @@ namespace WebLMS.Models.ViewModel
         public string Subject { get; set; }
         public string Description { get; set; }
         public string TemplateCode { get; set; }
+        public int AttemptsCount { get; set; }
     }
 }

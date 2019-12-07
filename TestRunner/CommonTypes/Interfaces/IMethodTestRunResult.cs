@@ -8,5 +8,7 @@ namespace TestRunner.CommonTypes.Interfaces
         object ActualResult { get; set; }
         string Message { get; set; }
         Exception Exception { get; set; }
+        DateTime? StartTime { get; set; }
+        DateTime? EndTime { get; set; }
     }
 }

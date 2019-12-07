@@ -1,6 +1,9 @@
-﻿using RunAndTest.Providers;
+﻿using Newtonsoft.Json.Linq;
+using RunAndTest.Providers;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TestRunner.CommonTypes.Implementations;
 using TestRunner.Compilers.Implementations;
 using TestRunner.Compilers.Interfaces;
@@ -18,7 +21,7 @@ namespace RunAndTest
 
         public static void Main(string[] args)
         {
-            IMethodCompiler methodCompiler = new RoslynMethodCompiler
+            /*IMethodCompiler methodCompiler = new RoslynMethodCompiler
             {
                 EntryMethod = "IsTicketHappy",
                 EntryType = "Lecture1.Program",
@@ -35,9 +38,32 @@ namespace RunAndTest
                 SourceCode = File.ReadAllText(filePath),
                 MethodTestRunner = methodTestRunner
             };
-            Run(testManager);
+            Run(testManager);*/
+
+            var result = Convert1(@"{types: ['int', 'int'], values: ['5', '5']}");
 
             Console.ReadKey();
+        }
+
+        private static object[] Convert1(string param)
+        {
+            var json = JObject.Parse(param);
+            var result = new List<object>();
+            var types = json["types"].Values().ToArray();
+            var values = json["values"].ToArray();
+            for (int i = 0; i < types.Length; i++)
+            {
+                string type = types[i].Value<string>();
+                if (type == "int")
+                {
+                    result.Add(Convert.ToInt32(values[i].Value<string>()));
+                }
+                else if (type == "bool")
+                {
+                    result.Add(Convert.ToBoolean(values[i].Value<string>()));
+                }
+            }
+            return result.ToArray();
         }
 
         private static void Run(MethodTestManager<MethodTestInfo> testManager)

@@ -26,7 +26,9 @@ namespace WebLMS.TestManager.Providers
         public async Task<IEnumerable<IMethodTestInfo>> GetMethodTestsAsync()
         {
             var codingTests = await _context.CodingTests
-                .Where(codingTest => codingTest.CodingHomeworkId == _homeworkId && codingTest.Name != "Compilation")
+                .Where(codingTest => codingTest.CodingHomeworkId == _homeworkId && 
+                    codingTest.Name != "Compilation" &&
+                    codingTest.Name != "Timeout")
                 .ToListAsync();
             return codingTests.Select(codingTest => ConvertFunction(codingTest));
         }

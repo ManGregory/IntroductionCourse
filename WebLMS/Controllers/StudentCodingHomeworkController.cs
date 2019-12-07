@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
-using TestRunner.CommonTypes.Implementations;
-using TestRunner.CommonTypes.Interfaces;
-using TestRunner.Compilers.Implementations;
-using TestRunner.Compilers.Interfaces;
-using TestRunner.TestRunners.Implementations;
-using TestRunner.TestRunners.Interfaces;
 using WebLMS.Data;
 using WebLMS.Models;
 using WebLMS.Models.ViewModel;
@@ -50,9 +42,10 @@ namespace WebLMS.Controllers
                 Description = codingHomework.Description
             };
             codingHomeworkViewModel.TemplateCode = await GetTemplateCode(codingHomework);
+            codingHomeworkViewModel.AttemptsCount = await GetAttemptsCount(codingHomework);
 
             return View(codingHomeworkViewModel);
-        }
+        }        
 
         [HttpPost]
         public async Task<IActionResult> TestUserSourceCode(int id, string sourceCode)
@@ -68,6 +61,13 @@ namespace WebLMS.Controllers
         private async Task<ApplicationUser> GetCurrentUser()
         {
             return await _manager.GetUserAsync(HttpContext.User);
+        }
+
+        private async Task<int> GetAttemptsCount(CodingHomework codingHomework)
+        {
+            var user = await GetCurrentUser();
+            return await _context.CodingHomeworkRuns
+                .CountAsync(homeworkRun => homeworkRun.User.Id == user.Id && homeworkRun.CodingHomework.Id == codingHomework.Id);
         }
 
         private async Task<string> GetTemplateCode(CodingHomework codingHomework)
