@@ -6,6 +6,7 @@
         Failed,
         CompilationFailed,
         TargetException,
-        UnknownException
+        UnknownException,
+        Timeout
     }
 }

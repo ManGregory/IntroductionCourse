@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using TestRunner.CommonTypes;
+using TestRunner.CommonTypes.Implementations;
 using TestRunner.CommonTypes.Interfaces;
 using TestRunner.Providers.Interfaces;
 using TestRunner.TestManagers.Interfaces;
@@ -48,7 +50,17 @@ namespace TestRunner.TestManagers.Implementations
                     Exception = ex;
                 }
             }
-            return new Dictionary<IMethodTestInfo, IMethodTestRunResult>();
+
+            var dict = new Dictionary<IMethodTestInfo, IMethodTestRunResult>();
+            if (IsTimedOut)
+            {
+                dict.Add(new MethodTestInfo(), new MethodTestRunResult() { TestRunStatus = TestRunStatus.Timeout });
+            }
+            if (Exception != null)
+            {
+                dict.Add(new MethodTestInfo(), new MethodTestRunResult() { TestRunStatus = TestRunStatus.UnknownException, Exception = Exception });
+            }
+            return dict;
         }
 
         public void Cancel()

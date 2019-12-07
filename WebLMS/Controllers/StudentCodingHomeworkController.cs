@@ -57,9 +57,11 @@ namespace WebLMS.Controllers
         [HttpPost]
         public async Task<IActionResult> TestUserSourceCode(int id, string sourceCode)
         {
-            var testManagerService = new TestManagerService(_context, id);
+            var testManagerService = new TestManagerService(_context, id, await GetCurrentUser());
             var testResult = await testManagerService.Run(sourceCode);
-            string result = string.Join(Environment.NewLine, testResult.Values.Select(res => res.Message));
+            string result = testManagerService.IsTimedOut ? 
+                "Timeout" : 
+                string.Join(Environment.NewLine, testResult.Values.Select(res => res.Message));
             return new JsonResult(result);
         }
 

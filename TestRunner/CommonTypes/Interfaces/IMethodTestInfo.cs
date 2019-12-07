@@ -2,6 +2,7 @@
 {
     public interface IMethodTestInfo
     {
+        int Id { get; set; }
         string Name { get; set; }
         object[] InputParameters { get; set; }
         object ExpectedResult { get; set; }
