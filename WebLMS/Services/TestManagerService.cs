@@ -33,29 +33,41 @@ namespace WebLMS.Services
             _currentUser = currentUser;
         }
 
-        private DbTestManager CreateDbTestManager(string sourceCode, string methodName, string typeName)
+        private DbTestManager CreateDbTestManager(string sourceCode, CodingHomework homework)
         {
             IMethodCompiler methodCompiler = new RoslynMethodCompiler
             {
-                EntryMethod = methodName,
-                EntryType = typeName,
+                EntryMethod = homework.EntryMethodName,
+                EntryType = homework.EntryType,
             };
-            IMethodTestRunner methodTestRunner = new MethodTestRunner
-            {
-                MethodCompiler = methodCompiler
-            };
-            var methodTestInfoProvider = new DbMethodTestInfoProvider(_context, _homeworkId);
-            methodTestInfoProvider.ConvertFunction = JsonConverter.ConvertToCommonTest;
+            ITestRunner testRunner = CreateTestRunner(homework.CodingTestType);
+            testRunner.MethodCompiler = methodCompiler;
+            var testInfoProvider = new DbMethodTestInfoProvider(_context, _homeworkId);
+            testInfoProvider.ConvertFunction = JsonConverter.ConvertToCommonTest;
             return new DbTestManager
             {
                 Timeout = timeout,
                 SourceCode = sourceCode,
-                TestInfoProvider = methodTestInfoProvider,
-                MethodTestRunner = methodTestRunner
+                TestInfoProvider = testInfoProvider,
+                TestRunner = testRunner
             };
-        }        
+        }
 
-        private async Task StoreResultsAsync(string sourceCode, IDictionary<IMethodTestInfo, IMethodTestRunResult> results, DateTime startTime, DateTime endTime)
+        private static ITestRunner CreateTestRunner(CodingTestType codingTestType)
+        {
+            ITestRunner runner;
+            if (codingTestType == CodingTestType.Method)
+            {
+                runner = new MethodTestRunner();
+            }
+            else
+            {
+                runner = new ConsoleTestRunner();
+            }
+            return runner;
+        }
+
+        private async Task StoreResultsAsync(string sourceCode, IDictionary<ITestInfo, ITestRunResult> results, DateTime startTime, DateTime endTime)
         {
             var codingHomeworkRun = new CodingHomeworkRun()
             {
@@ -84,7 +96,7 @@ namespace WebLMS.Services
             await _context.SaveChangesAsync();
         }
 
-        private CodingTest GetCodingTest(KeyValuePair<IMethodTestInfo, IMethodTestRunResult> pair)
+        private CodingTest GetCodingTest(KeyValuePair<ITestInfo, ITestRunResult> pair)
         {
             CodingTest codingTest;
             if (pair.Key.IsCompilation || pair.Value.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Timeout)
@@ -106,10 +118,10 @@ namespace WebLMS.Services
             return codingTest;
         }
 
-        public async Task<IDictionary<IMethodTestInfo, IMethodTestRunResult>> Run(string sourceCode)
+        public async Task<IDictionary<ITestInfo, ITestRunResult>> Run(string sourceCode)
         {
             var homework = await _context.CodingHomeworks.FirstOrDefaultAsync(homework => homework.Id == _homeworkId);
-            dbTestManager = CreateDbTestManager(sourceCode, homework.EntryMethodName, homework.EntryType);
+            dbTestManager = CreateDbTestManager(sourceCode, homework);
             var startTime = DateTime.Now;
             var results = await dbTestManager.RunAsync();
             var endTime = DateTime.Now;

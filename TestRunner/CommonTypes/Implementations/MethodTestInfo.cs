@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TestRunner.CommonTypes.Interfaces;
+﻿using TestRunner.CommonTypes.Interfaces;
 
 namespace TestRunner.CommonTypes.Implementations
 {

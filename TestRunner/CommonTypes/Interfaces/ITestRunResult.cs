@@ -2,7 +2,7 @@
 
 namespace TestRunner.CommonTypes.Interfaces
 {
-    public interface IMethodTestRunResult
+    public interface ITestRunResult
     {
         TestRunStatus TestRunStatus { get; set; }
         object ActualResult { get; set; }

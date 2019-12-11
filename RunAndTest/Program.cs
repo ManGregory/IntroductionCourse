@@ -4,10 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using TestRunner.CommonTypes.Implementations;
+using TestRunner.CommonTypes.Interfaces;
 using TestRunner.Compilers.Implementations;
 using TestRunner.Compilers.Interfaces;
 using TestRunner.TestManagers.Implementations;
+using TestRunner.TestManagers.Interfaces;
 using TestRunner.TestRunners.Implementations;
 using TestRunner.TestRunners.Interfaces;
 
@@ -16,33 +20,60 @@ namespace RunAndTest
 
     class Program
     {
-        private static int timeout = 1000;
+        private static int timeout = 100000;
         private static string filePath = @"D:\Programming\VSProjects\IntroductionC#\Example\HappyTicket.cs";
 
         public static void Main(string[] args)
         {
-            /*IMethodCompiler methodCompiler = new RoslynMethodCompiler
+            var testManager1 = CreateTestManager();
+            var testManager2 = CreateTestManager();
+            var testManager3 = CreateTestManager();
+            testManager2.TestInfoProvider = new DefaultMethodTestProvider2();
+            testManager3.TestInfoProvider = new DefaultMethodTestProvider3();
+
+            /*var sb = new StringBuilder();
+            string s = "123";
+            using (StringWriter writer = new StringWriter(sb))
+            {
+                using (StringReader reader = new StringReader(s))
+                {
+                    Console.SetOut(writer);
+                    Console.SetIn(reader);*/
+            //Parallel.ForEach(new[] { testManager1, testManager2, testManager3 }, (t) => Run(t));
+            Run(testManager1);
+            //}
+            /*var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+            standardOutput.AutoFlush = true;
+            Console.SetOut(standardOutput);*/
+            //}                
+
+            //var result = Convert1(@"{types: ['int', 'int'], values: ['5', '5']}");
+
+            TextReader reader = new StreamReader(Console.OpenStandardInput());
+            Console.SetIn(reader);
+            Console.ReadKey();
+        }
+
+        private static ITestManager<MethodTestInfo> CreateTestManager()
+        {
+            IMethodCompiler methodCompiler = new RoslynMethodCompiler
             {
                 EntryMethod = "IsTicketHappy",
                 EntryType = "Lecture1.Program",
             };
-            IMethodTestRunner methodTestRunner = new MethodTestRunner
+            ITestRunner methodTestRunner = new MethodTestRunner
             {
                 MethodCompiler = methodCompiler
             };
 
-            var testManager = new MethodTestManager<MethodTestInfo>()
+            var testManager = new TestManager<MethodTestInfo>()
             {
                 Timeout = timeout,
                 TestInfoProvider = new DefaultMethodTestProvider(),
                 SourceCode = File.ReadAllText(filePath),
-                MethodTestRunner = methodTestRunner
+                TestRunner = methodTestRunner
             };
-            Run(testManager);*/
-
-            var result = Convert1(@"{types: ['int', 'int'], values: ['5', '5']}");
-
-            Console.ReadKey();
+            return testManager;
         }
 
         private static object[] Convert1(string param)
@@ -66,17 +97,18 @@ namespace RunAndTest
             return result.ToArray();
         }
 
-        private static void Run(MethodTestManager<MethodTestInfo> testManager)
+        private static void Run<T>(ITestManager<T> testManager)
+            where T : class
         {
             var task = testManager.RunAsync();
-            Console.WriteLine("Press space key to cancel");
+            /*Console.WriteLine("Press space key to cancel");
             var key = Console.ReadKey();
             if (key.Key == ConsoleKey.Spacebar)
             {
                 testManager.Cancel();
             }
             else
-            {
+            {*/
                 if (testManager.IsTimedOut)
                 {
                     Console.WriteLine("Timeout");
@@ -89,10 +121,14 @@ namespace RunAndTest
                 {
                     foreach (var result in task.Result)
                     {
+                        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+                        standardOutput.AutoFlush = true;
+                        Console.SetOut(standardOutput);
+
                         Console.WriteLine(result.Value.Message);
                     }
                 }
-            }
+            //}
         }
     }
 }

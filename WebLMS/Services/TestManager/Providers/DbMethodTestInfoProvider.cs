@@ -10,7 +10,7 @@ using WebLMS.Models;
 
 namespace WebLMS.TestManager.Providers
 {
-    public class DbMethodTestInfoProvider : IMethodTestInfoProvider<CodingTest>
+    public class DbMethodTestInfoProvider : ITestInfoProvider<CodingTest>
     {
         LMSDbContext _context;
         int _homeworkId;
@@ -21,9 +21,9 @@ namespace WebLMS.TestManager.Providers
             _homeworkId = homeworkId;
         }
 
-        public Func<CodingTest, IMethodTestInfo> ConvertFunction { get; set; }
+        public Func<CodingTest, ITestInfo> ConvertFunction { get; set; }
 
-        public async Task<IEnumerable<IMethodTestInfo>> GetMethodTestsAsync()
+        public async Task<IEnumerable<ITestInfo>> GetMethodTestsAsync()
         {
             var codingTests = await _context.CodingTests
                 .Where(codingTest => codingTest.CodingHomeworkId == _homeworkId && 

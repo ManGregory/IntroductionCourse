@@ -11,7 +11,7 @@ namespace WebLMS.Services.TestManager
 {
     public static class JsonConverter
     {
-        public static IMethodTestInfo ConvertToCommonTest(CodingTest codingTest)
+        public static ITestInfo ConvertToCommonTest(CodingTest codingTest)
         {
             return new MethodTestInfo()
             {

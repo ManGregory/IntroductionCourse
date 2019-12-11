@@ -3,7 +3,7 @@ using TestRunner.CommonTypes.Interfaces;
 
 namespace TestRunner.CommonTypes.Implementations
 {
-    public class MethodTestRunResult : IMethodTestRunResult
+    public class TestRunResult : ITestRunResult
     {
         public TestRunStatus TestRunStatus { get; set; }
         public object ActualResult { get; set; }

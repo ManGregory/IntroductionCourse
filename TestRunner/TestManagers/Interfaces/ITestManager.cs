@@ -8,15 +8,16 @@ using TestRunner.TestRunners.Interfaces;
 
 namespace TestRunner.TestManagers.Interfaces
 {
-    public interface IMethodTestManager<T> where T : class
+    public interface ITestManager<T> 
+        where T : class
     {
         int Timeout { get; set; }
         string SourceCode { get; set; }
         bool IsTimedOut { get; set; }
         Exception Exception { get; set; }
-        IMethodTestInfoProvider<T> TestInfoProvider { get; set; }
-        IMethodTestRunner MethodTestRunner { get; set; }
-        Task<IDictionary<IMethodTestInfo, IMethodTestRunResult>> RunAsync();
+        ITestInfoProvider<T> TestInfoProvider { get; set; }
+        ITestRunner TestRunner { get; set; }
+        Task<IDictionary<ITestInfo, ITestRunResult>> RunAsync();
         void Cancel();
     }
 }

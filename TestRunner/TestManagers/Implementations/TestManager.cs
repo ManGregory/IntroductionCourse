@@ -11,7 +11,8 @@ using TestRunner.TestRunners.Interfaces;
 
 namespace TestRunner.TestManagers.Implementations
 {
-    public class MethodTestManager<T> : IDisposable, IMethodTestManager<T> where T : class
+    public class TestManager<T> : IDisposable, ITestManager<T> 
+        where T : class
     {
         private bool disposed = false;
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -20,16 +21,16 @@ namespace TestRunner.TestManagers.Implementations
         public string SourceCode { get; set; }
         public bool IsTimedOut { get; set; }
         public Exception Exception { get; set; }
-        public IMethodTestInfoProvider<T> TestInfoProvider { get; set; }
-        public IMethodTestRunner MethodTestRunner { get; set; }
+        public ITestInfoProvider<T> TestInfoProvider { get; set; }
+        public ITestRunner TestRunner { get; set; }
 
-        public async Task<IDictionary<IMethodTestInfo, IMethodTestRunResult>> RunAsync()
+        public async Task<IDictionary<ITestInfo, ITestRunResult>> RunAsync()
         {
             try
             {
                 cancellationTokenSource.CancelAfter(Timeout);
                 var methodTests = await TestInfoProvider.GetMethodTestsAsync();
-                var testRunTask = MethodTestRunner.RunAsync(SourceCode, methodTests, cancellationTokenSource.Token);
+                var testRunTask = TestRunner.RunAsync(SourceCode, methodTests, cancellationTokenSource.Token);
                 if (await Task.WhenAny(testRunTask, Task.Delay(Timeout, cancellationTokenSource.Token)) == testRunTask)
                 {
                     return await testRunTask;
@@ -51,14 +52,15 @@ namespace TestRunner.TestManagers.Implementations
                 }
             }
 
-            var dict = new Dictionary<IMethodTestInfo, IMethodTestRunResult>();
+            var dict = new Dictionary<ITestInfo, ITestRunResult>();
             if (IsTimedOut)
             {
-                dict.Add(new MethodTestInfo(), new MethodTestRunResult() { TestRunStatus = TestRunStatus.Timeout });
+                
+                dict.Add(new MethodTestInfo(), new TestRunResult() { TestRunStatus = TestRunStatus.Timeout });
             }
             if (Exception != null)
             {
-                dict.Add(new MethodTestInfo(), new MethodTestRunResult() { TestRunStatus = TestRunStatus.UnknownException, Exception = Exception });
+                dict.Add(new MethodTestInfo(), new TestRunResult() { TestRunStatus = TestRunStatus.UnknownException, Exception = Exception });
             }
             return dict;
         }
