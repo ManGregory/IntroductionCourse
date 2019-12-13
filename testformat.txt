@@ -2,18 +2,16 @@
 
 InputParameteres
 {
+    types: ["int"],
+    values: ["5"],
     [
         {
             name: "Step 1 - check",
-            types: ["int"],
-            values: ["5"],
             input: ["1", "2"],
             output: ["3", "9"]
         },
         {
             name: "Step 2 - check",
-            types: ["int"],
-            values: ["5"],
             input: ["1", "2"],
             output: ["3", "9"]
         },        

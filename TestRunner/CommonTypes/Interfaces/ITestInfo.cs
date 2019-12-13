@@ -7,9 +7,4 @@
         object ExpectedResult { get; set; }
         bool IsCompilation { get; set; }
     }
-
-    public interface ITestInfo<T> : ITestInfo
-    {
-        T InputParameters { get; set; }
-    }
 }

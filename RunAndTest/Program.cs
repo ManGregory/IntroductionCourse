@@ -25,33 +25,36 @@ namespace RunAndTest
 
         public static void Main(string[] args)
         {
-            var testManager1 = CreateTestManager();
+            /*var testManager1 = CreateTestManager();
             var testManager2 = CreateTestManager();
             var testManager3 = CreateTestManager();
             testManager2.TestInfoProvider = new DefaultMethodTestProvider2();
-            testManager3.TestInfoProvider = new DefaultMethodTestProvider3();
-
-            /*var sb = new StringBuilder();
-            string s = "123";
-            using (StringWriter writer = new StringWriter(sb))
-            {
-                using (StringReader reader = new StringReader(s))
-                {
-                    Console.SetOut(writer);
-                    Console.SetIn(reader);*/
-            //Parallel.ForEach(new[] { testManager1, testManager2, testManager3 }, (t) => Run(t));
+            testManager3.TestInfoProvider = new DefaultMethodTestProvider3();*/
+            var testManager1 = CreateConsoleTestManager();
             Run(testManager1);
-            //}
-            /*var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-            standardOutput.AutoFlush = true;
-            Console.SetOut(standardOutput);*/
-            //}                
-
-            //var result = Convert1(@"{types: ['int', 'int'], values: ['5', '5']}");
-
-            TextReader reader = new StreamReader(Console.OpenStandardInput());
-            Console.SetIn(reader);
             Console.ReadKey();
+        }
+
+        private static ITestManager<ConsoleTestInfo> CreateConsoleTestManager()
+        {
+            IMethodCompiler methodCompiler = new RoslynMethodCompiler
+            {
+                EntryMethod = "IsTicketHappy",
+                EntryType = "Lecture1.Program",
+            };
+            ITestRunner consoleTestRunner = new ConsoleTestRunner
+            {
+                MethodCompiler = methodCompiler
+            };
+
+            var testManager = new TestManager<ConsoleTestInfo>()
+            {
+                Timeout = timeout,
+                TestInfoProvider = new DefaultConsoleTestInfoProvider(),
+                SourceCode = File.ReadAllText(filePath),
+                TestRunner = consoleTestRunner
+            };
+            return testManager;
         }
 
         private static ITestManager<MethodTestInfo> CreateTestManager()
@@ -129,6 +132,7 @@ namespace RunAndTest
                     }
                 }
             //}
+
         }
     }
 }
