@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,32 +12,73 @@ namespace WebLMS.Services.TestManager
 {
     public static class JsonConverter
     {
-        public static ITestInfo ConvertToCommonTest(CodingTest codingTest)
+        class MethodTestJsonDTO
         {
+            public string[] Types { get; set; }
+            public string[] Values { get; set; }
+        }
+
+        class ConsoleTestJsonDTO
+        {
+            public string[] Types { get; set; }
+            public string[] Values { get; set; }
+            public IEnumerable<ConsoleStep> Steps { get; set; }
+        }        
+
+        public static ITestInfo ConvertToMethodTest(CodingTest codingTest)
+        {
+            var inputParams = JsonConvert.DeserializeObject<MethodTestJsonDTO>(codingTest.InputParameters);
+            var expectedResult = JsonConvert.DeserializeObject<MethodTestJsonDTO>(codingTest.ExpectedResult);
             return new MethodTestInfo()
             {
                 Id = codingTest.Id,
-                InputParameters = ConvertJson(codingTest.InputParameters),
-                ExpectedResult = ConvertJson(codingTest.ExpectedResult)[0]
+                Name = codingTest.Name,
+                InputParameters = ConvertTypeValueArray(inputParams),
+                ExpectedResult = ConvertTypeValueArray(expectedResult)[0]
             };
         }
 
-        private static object[] ConvertJson(string param)
+        public static ITestInfo ConvertToConsoleTest(CodingTest codingTest)
         {
-            var json = JObject.Parse(param);
-            var result = new List<object>();
-            var types = json["types"].Values().ToArray();
-            var values = json["values"].ToArray();
-            for (int i = 0; i < types.Length; i++)
+            var consoleTest = JsonConvert.DeserializeObject<ConsoleTestJsonDTO>(codingTest.InputParameters);
+            return new ConsoleTestInfo()
             {
-                string type = types[i].Value<string>();
+                Id = codingTest.Id,
+                Name = codingTest.Name,
+                ConsoleTest = ConvertToConsoleTest(consoleTest)
+            };
+        }
+
+        private static ConsoleTest ConvertToConsoleTest(ConsoleTestJsonDTO consoleTestJsonDTO)
+        {
+            return new ConsoleTest()
+            {
+                MethodInputParameteres = ConvertTypeValueArray(new MethodTestJsonDTO() 
+                { 
+                    Types = consoleTestJsonDTO.Types,
+                    Values = consoleTestJsonDTO.Values
+                }),
+                ConsoleSteps = consoleTestJsonDTO.Steps
+            };
+        }
+
+        private static object[] ConvertTypeValueArray(MethodTestJsonDTO method)
+        {
+            var result = new List<object>();
+            for (int i = 0; i < method.Types.Length; i++)
+            {
+                string type = method.Types[i];
                 if (type == "int")
                 {
-                    result.Add(Convert.ToInt32(values[i].Value<string>()));
+                    result.Add(Convert.ToInt32(method.Values[i]));
                 }
                 else if (type == "bool")
                 {
-                    result.Add(Convert.ToBoolean(values[i].Value<string>()));
+                    result.Add(Convert.ToBoolean(method.Values[i]));
+                }
+                else if (type == "string")
+                {
+                    result.Add(method.Values[i]);
                 }
             }
             return result.ToArray();

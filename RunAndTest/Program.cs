@@ -124,10 +124,6 @@ namespace RunAndTest
                 {
                     foreach (var result in task.Result)
                     {
-                        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-                        standardOutput.AutoFlush = true;
-                        Console.SetOut(standardOutput);
-
                         Console.WriteLine(result.Value.Message);
                     }
                 }

@@ -43,7 +43,14 @@ namespace WebLMS.Services
             ITestRunner testRunner = CreateTestRunner(homework.CodingTestType);
             testRunner.MethodCompiler = methodCompiler;
             var testInfoProvider = new DbMethodTestInfoProvider(_context, _homeworkId);
-            testInfoProvider.ConvertFunction = JsonConverter.ConvertToCommonTest;
+            if (homework.CodingTestType == CodingTestType.Method)
+            {
+                testInfoProvider.ConvertFunction = JsonConverter.ConvertToMethodTest;
+            }
+            else
+            {
+                testInfoProvider.ConvertFunction = JsonConverter.ConvertToConsoleTest;
+            }                           
             return new DbTestManager
             {
                 Timeout = timeout,

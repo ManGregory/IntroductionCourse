@@ -4,7 +4,7 @@ InputParameteres
 {
     types: ["int"],
     values: ["5"],
-    [
+    steps: [
         {
             name: "Step 1 - check",
             input: ["1", "2"],
@@ -12,8 +12,8 @@ InputParameteres
         },
         {
             name: "Step 2 - check",
-            input: ["1", "2"],
-            output: ["3", "9"]
+            input: ["Vasya"],
+            output: ["Hello, Vasya"]
         },        
     ]
 }

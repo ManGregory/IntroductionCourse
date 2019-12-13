@@ -27,7 +27,8 @@ namespace TestRunner.TestRunners.Implementations
         {
             cancellationToken.ThrowIfCancellationRequested();            
             var testRunResult = TryInvoke(testMethod, test);
-            if (testRunResult.TestRunStatus != TestRunStatus.TargetException)
+            if (testRunResult.TestRunStatus != TestRunStatus.TargetException || 
+                testRunResult.TestRunStatus != TestRunStatus.UnknownException)
             {
                 testRunResult.TestRunStatus = IsTestPassed(test, testRunResult) ? TestRunStatus.Passed : TestRunStatus.Failed;
             }

@@ -84,7 +84,6 @@ namespace TestRunner.TestRunners.Implementations
                 if (actualOutput != expected)
                 {
                     isPassed = false;
-                    break;
                 }
             }
             return new ConsoleStepResult()
