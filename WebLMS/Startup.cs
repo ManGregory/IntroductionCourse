@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebLMS.Models;
 using WebLMS.Identity;
+using Microsoft.Extensions.Logging;
+using WebLMS.Common;
 
 namespace WebLMS
 {
@@ -51,7 +53,7 @@ namespace WebLMS
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -79,6 +81,8 @@ namespace WebLMS
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            LogFactory.LoggerFactory = loggerFactory;
         }
     }
 }

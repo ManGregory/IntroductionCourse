@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using WebLMS.Common;
 using WebLMS.Data;
 using WebLMS.Models;
 using WebLMS.Models.ViewModel;
@@ -13,6 +15,7 @@ namespace WebLMS.Controllers
 {
     public class StudentCodingHomeworkController : Controller
     {
+        private readonly ILogger _logger = LogFactory.CreateLogger<StudentCodingHomeworkController>();
         private LMSDbContext _context;
         UserManager<ApplicationUser> _manager;
 
@@ -50,11 +53,13 @@ namespace WebLMS.Controllers
         [HttpPost]
         public async Task<IActionResult> TestUserSourceCode(int id, string sourceCode)
         {
+            _logger.LogInformation("SourceCode: {0}", sourceCode);
             var testManagerService = new TestManagerService(_context, id, await GetCurrentUser());
             var testResult = await testManagerService.Run(sourceCode);
             string result = testManagerService.IsTimedOut ? 
                 "Timeout" : 
                 string.Join(Environment.NewLine, testResult.Values.Select(res => res.Message));
+            _logger.LogInformation("Result: {0}", result);
             return new JsonResult(result);
         }
 

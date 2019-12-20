@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TestRunner.CommonTypes.Implementations;
 using TestRunner.CommonTypes.Interfaces;
 using TestRunner.Compilers.Implementations;
 using TestRunner.Compilers.Interfaces;
 using TestRunner.TestRunners.Implementations;
 using TestRunner.TestRunners.Interfaces;
+using WebLMS.Common;
 using WebLMS.Data;
 using WebLMS.Models;
 using WebLMS.Services.TestManager;
@@ -20,6 +20,7 @@ namespace WebLMS.Services
 {
     public class TestManagerService
     {
+        private readonly ILogger _logger = LogFactory.CreateLogger<TestManagerService>();
         private static int timeout = 10000;
         LMSDbContext _context;
         int _homeworkId;
@@ -127,12 +128,20 @@ namespace WebLMS.Services
 
         public async Task<IDictionary<ITestInfo, ITestRunResult>> Run(string sourceCode)
         {
+            _logger.LogInformation("Invoke Run method");
+
+            _logger.LogInformation("Get homework with id = {0}", _homeworkId);
             var homework = await _context.CodingHomeworks.FirstOrDefaultAsync(homework => homework.Id == _homeworkId);
             dbTestManager = CreateDbTestManager(sourceCode, homework);
             var startTime = DateTime.Now;
+
+            _logger.LogInformation("Run test manager");
             var results = await dbTestManager.RunAsync();
             var endTime = DateTime.Now;
+
+            _logger.LogInformation("Store results");
             await StoreResultsAsync(sourceCode, results, startTime, endTime);
+
             return results;
         }
 
