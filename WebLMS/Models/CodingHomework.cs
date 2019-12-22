@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace WebLMS.Models
 {
@@ -21,6 +18,8 @@ namespace WebLMS.Models
         public CodingTestType CodingTestType { get; set; }
         public string EntryType { get; set; }
         public string EntryMethodName { get; set; }
+        [DefaultValue(0)]
+        public int MaxAttempts { get; set; }
         
         public virtual Lecture Lecture { get; set; }
     }

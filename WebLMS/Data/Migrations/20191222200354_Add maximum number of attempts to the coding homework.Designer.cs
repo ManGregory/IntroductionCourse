@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebLMS.Data;
 
 namespace WebLMS.Data.Migrations
 {
     [DbContext(typeof(LMSDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191222200354_Add maximum number of attempts to the coding homework")]
+    partial class Addmaximumnumberofattemptstothecodinghomework
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -247,7 +249,7 @@ namespace WebLMS.Data.Migrations
                     b.Property<int>("LectureId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaxAttempts")
+                    b.Property<int>("MaxAttemtps")
                         .HasColumnType("int");
 
                     b.Property<string>("Subject")

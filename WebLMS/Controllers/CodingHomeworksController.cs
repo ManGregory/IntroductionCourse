@@ -59,7 +59,7 @@ namespace WebLMS
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,LectureId,Subject,Description,TemplateCode,CodingTestType,EntryType,EntryMethodName")] CodingHomework codingHomework)
+        public async Task<IActionResult> Create([Bind("Id,LectureId,Subject,Description,TemplateCode,CodingTestType,EntryType,EntryMethodName,MaxAttempts")] CodingHomework codingHomework)
         {
             if (ModelState.IsValid)
             {
@@ -93,7 +93,7 @@ namespace WebLMS
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,LectureId,Subject,Description,TemplateCode,CodingTestType,EntryType,EntryMethodName")] CodingHomework codingHomework)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,LectureId,Subject,Description,TemplateCode,CodingTestType,EntryType,EntryMethodName,MaxAttempts")] CodingHomework codingHomework)
         {
             if (id != codingHomework.Id)
             {
