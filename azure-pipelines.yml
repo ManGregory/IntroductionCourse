@@ -10,7 +10,8 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: '**/*.sln'
+  projects: '**/*.csproj'
+  unitTestsProjects: '**/*UnitTests/*.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
@@ -19,12 +20,12 @@ steps:
   displayName: Restore
   inputs:
     command: restore
-    projects: '$(Parameters.RestoreBuildProjects)'
+    projects: '$(Projects)'
 
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
-    projects: '$(Parameters.RestoreBuildProjects)'
+    projects: '$(Projects)'
     arguments: '--configuration $(BuildConfiguration)'
 
 - task: pekspro.pekspro-efcore-migration-script-generator.efcore-migration-script-generator.efcore-migration-script-generator-task@0
@@ -38,7 +39,7 @@ steps:
   displayName: Test
   inputs:
     command: test
-    projects: '$(Parameters.UnitTestProjects)'
+    projects: '$(UnitTestProjects)'
     arguments: '--configuration $(BuildConfiguration)'
 
 - task: DotNetCoreCLI@2
