@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TestRunner.CommonTypes.Implementations;
 using TestRunner.CommonTypes.Interfaces;
 using TestRunner.Compilers.Implementations;
 using TestRunner.Compilers.Interfaces;
@@ -21,7 +23,7 @@ namespace WebLMS.Services
     public class TestManagerService
     {
         private readonly ILogger _logger = LogFactory.CreateLogger<TestManagerService>();
-        private static int timeout = 10000;
+        private static int timeout = 15000;
         LMSDbContext _context;
         int _homeworkId;
         ApplicationUser _currentUser;
@@ -46,11 +48,11 @@ namespace WebLMS.Services
             var testInfoProvider = new DbMethodTestInfoProvider(_context, _homeworkId);
             if (homework.CodingTestType == CodingTestType.Method)
             {
-                testInfoProvider.ConvertFunction = JsonConverter.ConvertToMethodTest;
+                testInfoProvider.ConvertFunction = JsonTypesConverter.ConvertToMethodTest;
             }
             else
             {
-                testInfoProvider.ConvertFunction = JsonConverter.ConvertToConsoleTest;
+                testInfoProvider.ConvertFunction = JsonTypesConverter.ConvertToConsoleTest;
             }                           
             return new DbTestManager
             {
@@ -75,7 +77,7 @@ namespace WebLMS.Services
             return runner;
         }
 
-        private async Task StoreResultsAsync(string sourceCode, IDictionary<ITestInfo, ITestRunResult> results, DateTime startTime, DateTime endTime)
+        private async Task StoreResultsAsync(CodingHomework homework, string sourceCode, IDictionary<ITestInfo, ITestRunResult> results, DateTime startTime, DateTime endTime)
         {
             var codingHomeworkRun = new CodingHomeworkRun()
             {
@@ -87,21 +89,39 @@ namespace WebLMS.Services
             };
             _context.Add(codingHomeworkRun);
             foreach (var result in results)
-            {                
+            {
                 var testRun = new CodingHomeworkTestRun()
                 {
                     CodingHomeworkRun = codingHomeworkRun,
                     CodingTest = GetCodingTest(result),
-                    Result = result.Value.ActualResult?.ToString() ?? string.Empty,
+                    Result = GetResult(homework.CodingTestType, result),
                     Message = result.Value.Message,
                     TestRunStatus = result.Value.TestRunStatus,
                     IsCompilation = result.Key.IsCompilation,
                     StartTime = result.Value.StartTime,
                     EndTime = result.Value.EndTime
-                };                
+                };
                 _context.Add(testRun);
             };
             await _context.SaveChangesAsync();
+        }
+
+        private string GetResult(CodingTestType codingTestType, KeyValuePair<ITestInfo, ITestRunResult> pair)
+        {
+            string result = string.Empty;
+            if (codingTestType == CodingTestType.Method)
+            {
+                result = pair.Value.ActualResult?.ToString() ?? string.Empty;
+            }
+            else
+            {
+                var results = pair.Value.ActualResult as IEnumerable<ConsoleStepResult>;
+                if (results != null)
+                {
+                    result = JsonConvert.SerializeObject(results);
+                }
+            }
+            return result;
         }
 
         private CodingTest GetCodingTest(KeyValuePair<ITestInfo, ITestRunResult> pair)
@@ -140,7 +160,7 @@ namespace WebLMS.Services
             var endTime = DateTime.Now;
 
             _logger.LogInformation("Store results");
-            await StoreResultsAsync(sourceCode, results, startTime, endTime);
+            await StoreResultsAsync(homework, sourceCode, results, startTime, endTime);
 
             return results;
         }

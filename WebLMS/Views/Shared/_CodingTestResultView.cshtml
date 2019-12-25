@@ -1,0 +1,35 @@
+﻿@using TestRunner.CommonTypes.Interfaces;
+@model IDictionary<ITestInfo, ITestRunResult>
+
+@if (Model.Count == 1)
+{
+    var testRunStatus = Model.First().Value.TestRunStatus;
+    if (testRunStatus == TestRunner.CommonTypes.TestRunStatus.Timeout)
+    {
+        <p>Timeout</p>
+    }
+    else if (testRunStatus == TestRunner.CommonTypes.TestRunStatus.UnknownException)
+    {
+        <p>Unknown exception:</p>
+        <p>
+            @Model.First().Value.Exception.Message
+        </p>
+        <pre>
+            @Model.First().Value.Exception.StackTrace
+        </pre>
+    }
+    else if (testRunStatus == TestRunner.CommonTypes.TestRunStatus.CompilationFailed)
+    {
+        <p>Compilation failed:</p>
+        <pre>
+            @Model.First().Value.Message
+        </pre>
+    }
+}
+else
+{
+    @foreach (var pair in Model)
+    {
+        <p>@pair.Value.Message</p>
+    }
+}

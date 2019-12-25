@@ -10,7 +10,7 @@ using WebLMS.Models;
 
 namespace WebLMS.Services.TestManager
 {
-    public static class JsonConverter
+    public static class JsonTypesConverter
     {
         class MethodTestJsonDTO
         {

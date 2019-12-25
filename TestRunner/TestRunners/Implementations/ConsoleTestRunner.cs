@@ -12,14 +12,6 @@ namespace TestRunner.TestRunners.Implementations
 {
     public class ConsoleTestRunner : BaseTestRunner
     {
-        private class ConsoleStepResult
-        {
-            public string Name { get; set; }
-            public IEnumerable<string> Expected { get; set; }
-            public IEnumerable<string> Actual { get; set; }
-            public bool IsPassed { get; set; }
-        }
-
         private void RestoreConsole()
         {
             var standardOutput = new StreamWriter(Console.OpenStandardOutput());

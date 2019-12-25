@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <p>Attempts: @Model.AttemptsCount</p>
+        <p>Attempts: <span id="attemptsCount">@Model.AttemptsCount</span></p>
     </div>
 </div>
 <div class="row">
@@ -38,17 +38,15 @@
     @{ await Html.RenderPartialAsync("SourceCodeScriptsPartial"); }
     <script>
         $('#sendSourceCode').click(function () {
-            $.ajax({
-                type: 'POST',
-                url: '/StudentCodingHomework/TestUserSourceCode',
-                data: {
-                    'id': @Model.HomeworkId,
-                    'sourceCode': editor.getValue()
-                }
-            })
-            .done(function (result) {
-                $('#testResult').html(result);
-            });
+            $("#sendSourceCode").attr("disabled", true);
+            $('#testResult')
+                .load("/StudentCodingHomework/TestUserSourceCode", { "id": @Model.HomeworkId, "sourceCode": editor.getValue() },
+                    function () {
+                        $("#sendSourceCode").attr("disabled", false);
+                        var attemptsStr = $("#attemptsCount").text();
+                        var attempts = parseInt(attemptsStr) + 1;
+                        $("#attemptsCount").text(attempts);
+                    });
         });
     </script>
 }

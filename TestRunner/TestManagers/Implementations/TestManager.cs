@@ -54,8 +54,7 @@ namespace TestRunner.TestManagers.Implementations
 
             var dict = new Dictionary<ITestInfo, ITestRunResult>();
             if (IsTimedOut)
-            {
-                
+            {                
                 dict.Add(new MethodTestInfo(), new TestRunResult() { TestRunStatus = TestRunStatus.Timeout });
             }
             if (Exception != null)

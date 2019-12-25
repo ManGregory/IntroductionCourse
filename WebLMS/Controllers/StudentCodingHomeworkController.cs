@@ -60,7 +60,8 @@ namespace WebLMS.Controllers
                 "Timeout" : 
                 string.Join(Environment.NewLine, testResult.Values.Select(res => res.Message));
             _logger.LogInformation("Result: {0}", result);
-            return new JsonResult(result);
+            return PartialView("_CodingTestResultView", testResult);
+            //return new JsonResult(result);
         }
 
         private async Task<ApplicationUser> GetCurrentUser()
