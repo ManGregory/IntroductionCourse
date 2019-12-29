@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using WebLMS.Services;
 
 namespace WebLMS.Controllers
 {
+    [Authorize]
     public class StudentCodingHomeworkController : Controller
     {
         private readonly ILogger _logger = LogFactory.CreateLogger<StudentCodingHomeworkController>();

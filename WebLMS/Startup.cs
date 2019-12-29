@@ -46,10 +46,10 @@ namespace WebLMS
                     .AddClaimsPrincipalFactory<ExtendedUserClaimsPrincipalFactory>();
             services.AddControllersWithViews();
             services.AddRazorPages();
-            services.AddAuthorization(options =>
+            /*services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Administrator"));
-            });
+            });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,7 +78,7 @@ namespace WebLMS
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=StudentsHome}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
 

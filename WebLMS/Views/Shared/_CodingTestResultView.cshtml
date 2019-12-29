@@ -26,6 +26,13 @@ else if (@Model.IsCompilationFailed)
         @Model.CompilationErrors
     </pre>
 }
+else if (@Model.TestRunResults == null || !@Model.TestRunResults.Any())
+{
+    <p class="text-info">There are no tests to run.
+    <br />
+    Please contact administrator.
+    </p>
+}
 else
 {
     @foreach (var run in @Model.TestRunResults)

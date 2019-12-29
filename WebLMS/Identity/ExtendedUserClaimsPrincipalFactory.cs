@@ -19,6 +19,10 @@ namespace WebLMS.Identity
         {
             var identity = await base.GenerateClaimsAsync(user);
             identity.AddClaim(new Claim("StudentName", user.StudentName ?? "[Click to edit profile]"));
+
+            var userRoles = await UserManager.GetRolesAsync(user);
+            identity.AddClaims(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+
             return identity;
         }
     }

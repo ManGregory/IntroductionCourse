@@ -11,7 +11,7 @@ using WebLMS.Models;
 
 namespace WebLMS
 {
-    //[Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator")]
     public class CodingTestsController : Controller
     {
         private readonly LMSDbContext _context;

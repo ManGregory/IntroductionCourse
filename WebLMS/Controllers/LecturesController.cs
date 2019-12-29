@@ -11,7 +11,7 @@ using WebLMS.Models;
 
 namespace WebLMS
 {
-    //[Authorize(Policy = "RequireAdmin")]
+    [Authorize(Roles="Administrator")]
     public class LecturesController : Controller
     {
         private readonly LMSDbContext _context;
