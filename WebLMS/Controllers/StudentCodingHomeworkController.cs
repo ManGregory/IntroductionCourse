@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WebLMS.Assemblers;
 using WebLMS.Common;
 using WebLMS.Data;
 using WebLMS.Models;
@@ -42,7 +43,8 @@ namespace WebLMS.Controllers
             {
                 HomeworkId = codingHomework.Id,
                 Subject = codingHomework.Subject,
-                Description = codingHomework.Description
+                Description = codingHomework.Description,
+                MaxAttemptsCount = codingHomework.MaxAttempts
             };
             codingHomeworkViewModel.TemplateCode = await GetTemplateCode(codingHomework);
             codingHomeworkViewModel.AttemptsCount = await GetAttemptsCount(codingHomework);
@@ -55,13 +57,15 @@ namespace WebLMS.Controllers
         {
             _logger.LogInformation("SourceCode: {0}", sourceCode);
             var testManagerService = new TestManagerService(_context, id, await GetCurrentUser());
-            var testResult = await testManagerService.Run(sourceCode);
+            var testRuns = await testManagerService.Run(sourceCode);
             string result = testManagerService.IsTimedOut ? 
                 "Timeout" : 
-                string.Join(Environment.NewLine, testResult.Values.Select(res => res.Message));
+                string.Join(Environment.NewLine, testRuns.Select(run => run.Message));
             _logger.LogInformation("Result: {0}", result);
-            return PartialView("_CodingTestResultView", testResult);
-            //return new JsonResult(result);
+
+            var homeworkResult = StudentCodingHomeworkResultAssembler.Assemble(testRuns);
+
+            return PartialView("_CodingTestResultView", homeworkResult);
         }
 
         private async Task<ApplicationUser> GetCurrentUser()

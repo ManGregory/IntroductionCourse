@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <p>Attempts: <span id="attemptsCount">@Model.AttemptsCount</span></p>
+        <p>Attempts: <span id="attemptsCount">@Model.AttemptsCount</span>/<span id="maxAttemptsCount">@Model.MaxAttempts</span></p>
     </div>
 </div>
 <div class="row">
@@ -26,7 +26,8 @@
             </div>
 
             <div class="form-group">
-                <input type="button" id="sendSourceCode" value="Отправить на проверку" class="btn btn-primary" />
+                <input type="button" id="sendSourceCode" value="Отправить на проверку" class="btn btn-primary" 
+                    @(Model.ExceededAttempts ? "disabled=true" : "")/>
             </div>
         </form>
         <div id="testResult"></div>
@@ -45,6 +46,9 @@
                         $("#sendSourceCode").attr("disabled", false);
                         var attemptsStr = $("#attemptsCount").text();
                         var attempts = parseInt(attemptsStr) + 1;
+                        if (attempts >= @Model.MaxAttemptsCount && @Model.MaxAttemptsCount != 0) {
+                            $("#sendSourceCode").attr("disabled", true);
+                        }
                         $("#attemptsCount").text(attempts);
                     });
         });

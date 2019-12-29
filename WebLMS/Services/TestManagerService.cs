@@ -23,7 +23,6 @@ namespace WebLMS.Services
     public class TestManagerService
     {
         private readonly ILogger _logger = LogFactory.CreateLogger<TestManagerService>();
-        private static int timeout = 15000;
         LMSDbContext _context;
         int _homeworkId;
         ApplicationUser _currentUser;
@@ -56,7 +55,7 @@ namespace WebLMS.Services
             }                           
             return new DbTestManager
             {
-                Timeout = timeout,
+                Timeout = Constants.TimeoutPeriod,
                 SourceCode = sourceCode,
                 TestInfoProvider = testInfoProvider,
                 TestRunner = testRunner
@@ -77,7 +76,7 @@ namespace WebLMS.Services
             return runner;
         }
 
-        private async Task StoreResultsAsync(CodingHomework homework, string sourceCode, IDictionary<ITestInfo, ITestRunResult> results, DateTime startTime, DateTime endTime)
+        private async Task<IEnumerable<CodingHomeworkTestRun>> StoreResultsAsync(CodingHomework homework, string sourceCode, IDictionary<ITestInfo, ITestRunResult> results, DateTime startTime, DateTime endTime)
         {
             var codingHomeworkRun = new CodingHomeworkRun()
             {
@@ -88,6 +87,8 @@ namespace WebLMS.Services
                 EndTime = endTime
             };
             _context.Add(codingHomeworkRun);
+
+            var testRuns = new List<CodingHomeworkTestRun>(results.Count);
             foreach (var result in results)
             {
                 var testRun = new CodingHomeworkTestRun()
@@ -102,8 +103,10 @@ namespace WebLMS.Services
                     EndTime = result.Value.EndTime
                 };
                 _context.Add(testRun);
+                testRuns.Add(testRun);
             };
             await _context.SaveChangesAsync();
+            return testRuns;
         }
 
         private string GetResult(CodingTestType codingTestType, KeyValuePair<ITestInfo, ITestRunResult> pair)
@@ -146,7 +149,7 @@ namespace WebLMS.Services
             return codingTest;
         }
 
-        public async Task<IDictionary<ITestInfo, ITestRunResult>> Run(string sourceCode)
+        public async Task<IEnumerable<CodingHomeworkTestRun>> Run(string sourceCode)
         {
             _logger.LogInformation("Invoke Run method");
 
@@ -160,9 +163,9 @@ namespace WebLMS.Services
             var endTime = DateTime.Now;
 
             _logger.LogInformation("Store results");
-            await StoreResultsAsync(homework, sourceCode, results, startTime, endTime);
+            var testRuns = await StoreResultsAsync(homework, sourceCode, results, startTime, endTime);
 
-            return results;
+            return testRuns;
         }
 
         public bool IsTimedOut

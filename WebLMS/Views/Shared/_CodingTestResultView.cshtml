@@ -1,35 +1,77 @@
-﻿@using TestRunner.CommonTypes.Interfaces;
-@model IDictionary<ITestInfo, ITestRunResult>
+﻿@using WebLMS.Models.ViewModel;
+@model StudentCodingHomeworkResultViewModel
 
-@if (Model.Count == 1)
+
+@if (@Model.IsTimedOut)
 {
-    var testRunStatus = Model.First().Value.TestRunStatus;
-    if (testRunStatus == TestRunner.CommonTypes.TestRunStatus.Timeout)
-    {
-        <p>Timeout</p>
-    }
-    else if (testRunStatus == TestRunner.CommonTypes.TestRunStatus.UnknownException)
-    {
-        <p>Unknown exception:</p>
-        <p>
-            @Model.First().Value.Exception.Message
-        </p>
-        <pre>
-            @Model.First().Value.Exception.StackTrace
-        </pre>
-    }
-    else if (testRunStatus == TestRunner.CommonTypes.TestRunStatus.CompilationFailed)
-    {
-        <p>Compilation failed:</p>
-        <pre>
-            @Model.First().Value.Message
-        </pre>
-    }
+    <p>
+        <span class="text-danger">Timeout</span>
+        <br />
+        Execution of the tests or compilation of your program takes more than @Model.TimeoutPeriod seconds
+        <br />
+        Please review your source code, probably there are extra or unncessary call to methods Console.ReadKey or Console.ReadLine
+    </p>
+}
+else if (@Model.IsUnknownException)
+{
+    <p class="text-danger">There was an unknown <strong>exception</strong> during the execution:</p>
+    <pre>
+        @Model.ExceptionText
+    </pre>
+}
+else if (@Model.IsCompilationFailed)
+{
+    <p class="text-danger">The compilation is <strong>failed</strong>, errors:</p>
+    <pre>
+        @Model.CompilationErrors
+    </pre>
 }
 else
 {
-    @foreach (var pair in Model)
+    @foreach (var run in @Model.TestRunResults)
     {
-        <p>@pair.Value.Message</p>
+        @if (run.TestType == CodingTestType.Method)
+        {
+            <p class="@(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "text-success" : "text-danger")">
+                @run.TestName is <strong>@run.TestRunStatus.ToString()</strong>, 
+                Input parameters: @string.Join(", ", run.InputParams)
+                @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Failed)
+                {
+                    <br />
+                    <span>Expected: @run.Expected, Actual: @run.Actual</span>
+                }
+                else @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.TargetException)
+                {
+                    <br />
+                    <span>There was an <strong>exception</strong> during execution of the test.</span>
+                }
+            </p>
+        }
+        else
+        {
+            <p class="@(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "text-success" : "text-danger")">
+                @run.TestName is <strong>@run.TestRunStatus.ToString()</strong>,
+                Input parameters: @string.Join(", ", run.InputParams)
+                @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Failed)
+                {
+                    <br />
+                    <span>Steps:</span>
+                    <ul>
+                        @foreach (var stepResult in @run.StepResults)
+                        {
+                            <li class="@(stepResult.IsPassed ? "text-success" : "text-danger")">
+                                @stepResult.Name is @(stepResult.IsPassed ? "Passed" : "Failed")
+                                Expected: (@string.Join(", ", stepResult.Expected)), Actual: (@string.Join(", ", stepResult.Actual))
+                            </li>
+                        }
+                    </ul>
+                }
+                else @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.TargetException)
+                {
+                    <br />
+                    <span>There was an <strong>exception</strong> during execution of the test.</span>
+                }
+            </p>
+        }
     }
 }

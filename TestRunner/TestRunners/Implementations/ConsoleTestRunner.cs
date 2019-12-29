@@ -90,6 +90,7 @@ namespace TestRunner.TestRunners.Implementations
         protected override string BuildMessage(ITestInfo test, ITestRunResult testRunResult)
         {
             var stepResults = testRunResult.ActualResult as IEnumerable<ConsoleStepResult>;
+            if (stepResults == null) return string.Empty;
 
             var sb = new StringBuilder();
             bool isPassed = testRunResult.TestRunStatus == TestRunStatus.Passed;
