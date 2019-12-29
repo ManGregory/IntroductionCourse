@@ -16,6 +16,8 @@ namespace WebLMS.Assemblers
         public static StudentCodingHomeworkResultViewModel Assemble(IEnumerable<CodingHomeworkTestRun> testRuns)
         {
             var codingHomeworkResult = new StudentCodingHomeworkResultViewModel();
+            if (!testRuns.Any()) return codingHomeworkResult;
+
             var runCount = testRuns.Count();
             var firstRun = testRuns.First();
             if (runCount == 1)

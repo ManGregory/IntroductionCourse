@@ -15,7 +15,7 @@ namespace WebLMS.Models.ViewModel
         public string TemplateCode { get; set; }
         public int AttemptsCount { get; set; }
         public int MaxAttemptsCount { get; set; }
-
+        public StudentCodingHomeworkResultViewModel LastAttempt { get; set; }
         public string MaxAttempts
         {
             get

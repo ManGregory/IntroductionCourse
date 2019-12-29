@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -50,9 +51,26 @@ namespace WebLMS.Controllers
             };
             codingHomeworkViewModel.TemplateCode = await GetTemplateCode(codingHomework);
             codingHomeworkViewModel.AttemptsCount = await GetAttemptsCount(codingHomework);
+            codingHomeworkViewModel.LastAttempt = await GetLastAttempt(codingHomework);
 
             return View(codingHomeworkViewModel);
-        }        
+        }
+
+        private async Task<StudentCodingHomeworkResultViewModel> GetLastAttempt(CodingHomework codingHomework)
+        {
+            var lastRun = await GetLastCodingHomeworkRun(codingHomework);
+            var lastTestRuns = new List<CodingHomeworkTestRun>();
+            if (lastRun != null)
+            {
+                lastTestRuns = await _context.CodingHomeworkTestRuns
+                    .AsNoTracking()
+                    .Where(run => run.CodingHomeworkRunId == lastRun.Id)
+                    .Include(run => run.CodingTest)
+                    .Include(run => run.CodingTest.CodingHomework)
+                    .ToListAsync();
+            }
+            return StudentCodingHomeworkResultAssembler.Assemble(lastTestRuns);
+        }
 
         [HttpPost]
         public async Task<IActionResult> TestUserSourceCode(int id, string sourceCode)
@@ -86,16 +104,21 @@ namespace WebLMS.Controllers
         {
             string sourceCode = codingHomework.TemplateCode;
 
-            var user = await GetCurrentUser();
-            var codingHomeworkRun = await _context.CodingHomeworkRuns
-                .OrderByDescending(homework => homework.StartTime)
-                .FirstOrDefaultAsync(homework => homework.CodingHomework.Id == codingHomework.Id && homework.User.Id == user.Id);
+            CodingHomeworkRun codingHomeworkRun = await GetLastCodingHomeworkRun(codingHomework);
             if (codingHomeworkRun != null)
             {
                 sourceCode = codingHomeworkRun.SourceCode;
             }
 
             return sourceCode;
+        }
+
+        private async Task<CodingHomeworkRun> GetLastCodingHomeworkRun(CodingHomework codingHomework)
+        {
+            var user = await GetCurrentUser();
+            return await _context.CodingHomeworkRuns
+                .OrderByDescending(homework => homework.StartTime)
+                .FirstOrDefaultAsync(homework => homework.CodingHomework.Id == codingHomework.Id && homework.User.Id == user.Id);
         }
     }
 }

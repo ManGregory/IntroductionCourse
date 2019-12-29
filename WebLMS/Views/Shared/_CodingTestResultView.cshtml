@@ -28,9 +28,9 @@ else if (@Model.IsCompilationFailed)
 }
 else if (@Model.TestRunResults == null || !@Model.TestRunResults.Any())
 {
-    <p class="text-info">There are no tests to run.
+    <p class="text-info">No results. 
     <br />
-    Please contact administrator.
+    This is either first attempt or there are no tests to run.
     </p>
 }
 else
