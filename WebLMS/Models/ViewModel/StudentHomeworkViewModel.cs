@@ -11,5 +11,7 @@ namespace WebLMS.Models.ViewModel
         public string Title { get; set; }
         public string Description { get; set; }
         public HomeworkType HomeworkType { get; set; }
+        public bool IsPassed { get; set; }
+        public string Attempts { get; set; }
     }
 }
