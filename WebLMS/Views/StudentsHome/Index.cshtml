@@ -1,14 +1,31 @@
 ﻿@model IEnumerable<WebLMS.Models.ViewModel.StudentLectureViewModel>
 
-@foreach (var item in Model)
-{
-    <h2>@item.Title</h2>
-    <p>@item.Description</p>
-    @foreach (var homework in item.StudentHomeworks)
-    {
-        @*<h2>@homework.Title</h2>
-        <p>@homework.Description</p>*@
-        <a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id">@homework.Title</a>
-        <hr />
-    }
+<div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <ul class="list-unstyled components">
+            @foreach (var item in Model)
+            {
+                <li>
+                    <a href="#" class="lecture-ref" data-id="@item.Id">@item.Title</a>
+                </li>
+            }
+        </ul>
+    </nav>
+    <div id="lecture-content">
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('.lecture-ref').click(function () {
+            var id = $(this).data("id");
+            console.log(id);
+            $('#lecture-content')
+                .load("/StudentsHome/LectureContent", { "lectureId": id },
+                    function () {
+                        
+                    });
+        });
+    </script>
 }

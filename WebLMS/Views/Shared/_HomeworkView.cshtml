@@ -1,0 +1,15 @@
+﻿@using WebLMS.Models.ViewModel;
+@using System.Web;
+@model StudentLectureViewModel
+
+<h3>@Model.Title</h3>
+<hr />
+<p>@Html.Raw(Model.Description)</p>
+
+<h5>Домашние задания</h5>
+@foreach (var homework in Model.StudentHomeworks)
+{
+    <h6><a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id">@homework.Title</a></h6>
+    <p>@homework.Description</p>
+    <hr />
+}

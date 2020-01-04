@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebLMS.Data;
 using WebLMS.Models.ViewModel;
 
@@ -16,24 +18,43 @@ namespace WebLMS.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var lectures = _context.Lectures.Select(lec => new StudentLectureViewModel 
+            var lectures = await _context.Lectures.AsNoTracking().Select(lec => new StudentLectureViewModel 
             { 
                 Id = lec.Id, 
                 Title = lec.Title, 
                 Description = lec.Description, 
-                IsAvailable = lec.IsAvailable,
-                StudentHomeworks = _context.CodingHomeworks.Where(coding => coding.LectureId == lec.Id)
-                    .Select(coding => new StudentHomeworkViewModel()
-                    {
-                        Id = coding.Id,
-                        Title = coding.Subject,
-                        Description = coding.Description,
-                        HomeworkType = HomeworkType.Coding
-                    })
-            });
+                IsAvailable = lec.IsAvailable
+            }).ToListAsync();
             return View(lectures);
+        }
+
+        public async Task<IActionResult> LectureContent(int? lectureId)
+        {
+            if (lectureId == null) return NotFound();
+
+            var lecture = _context.Lectures.AsNoTracking().FirstOrDefault(lec => lec.Id == lectureId);
+            if (lecture == null) return NotFound();
+
+            var homeworks = await _context.CodingHomeworks.AsNoTracking()
+                .Where(homework => homework.LectureId == lectureId).ToListAsync();
+
+            var model = new StudentLectureViewModel()
+            {
+                Id = lecture.Id,
+                Title = lecture.Title,
+                Description = lecture.Description,
+                IsAvailable = lecture.IsAvailable,
+                StudentHomeworks = homeworks.Select(hom => new StudentHomeworkViewModel()
+                {
+                    Id = hom.Id,
+                    Title = hom.Subject,
+                    Description = hom.Description,
+                    HomeworkType = HomeworkType.Coding
+                })
+            };
+            return PartialView("_HomeworkView", model);
         }
     }
 }
