@@ -1,5 +1,5 @@
 ﻿@using WebLMS.Models.ViewModel;
-@using System.Web;
+@using WebLMS.Views;
 @model StudentLectureViewModel
 
 <h3>@Model.Title</h3>
@@ -9,7 +9,10 @@
 <h5>Домашние задания</h5>
 @foreach (var homework in Model.StudentHomeworks)
 {
-    <h6><a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id">@homework.Title</a></h6>
+    <h6>
+        <a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id">@homework.Title</a>
+        @Html.HomeworkStatusBadge(@homework.Status)
+    </h6>
     <p>@homework.Description</p>
     <hr />
 }

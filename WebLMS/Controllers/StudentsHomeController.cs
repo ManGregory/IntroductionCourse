@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebLMS.Data;
+using WebLMS.Models;
 using WebLMS.Models.ViewModel;
 
 namespace WebLMS.Controllers
@@ -12,10 +16,12 @@ namespace WebLMS.Controllers
     public class StudentsHomeController : Controller
     {
         private readonly LMSDbContext _context;
+        UserManager<ApplicationUser> _manager;
 
-        public StudentsHomeController(LMSDbContext context)
+        public StudentsHomeController(LMSDbContext context, UserManager<ApplicationUser> manager)
         {
             _context = context;
+            _manager = manager;
         }
 
         public async Task<IActionResult> Index()
@@ -45,16 +51,46 @@ namespace WebLMS.Controllers
                 Id = lecture.Id,
                 Title = lecture.Title,
                 Description = lecture.Description,
-                IsAvailable = lecture.IsAvailable,
-                StudentHomeworks = homeworks.Select(hom => new StudentHomeworkViewModel()
+                IsAvailable = lecture.IsAvailable
+            };
+            var studentHomeworks = new List<StudentHomeworkViewModel>();
+            foreach (var hom in homeworks)
+            {
+                studentHomeworks.Add(new StudentHomeworkViewModel()
                 {
                     Id = hom.Id,
                     Title = hom.Subject,
                     Description = hom.Description,
-                    HomeworkType = HomeworkType.Coding
-                })
-            };
+                    HomeworkType = HomeworkType.Coding,
+                    Status = await GetStatus(hom)
+                });
+            }
+            model.StudentHomeworks = studentHomeworks;
             return PartialView("_HomeworkView", model);
+        }
+
+        private async Task<HomeworkStatus> GetStatus(CodingHomework homework)
+        {
+            var testsCount = await _context.CodingTests.AsNoTracking()
+                .CountAsync(cod => cod.CodingHomeworkId == homework.Id && cod.Name != "Compilation");
+            if (testsCount == 0) return HomeworkStatus.NoTests;
+
+            var user = await GetCurrentUser();
+            var hasRuns = await _context.CodingHomeworkRuns.AsNoTracking()
+                .AnyAsync(homRun => homRun.CodingHomework.Id == homework.Id && homRun.User.Id == user.Id);
+            if (!hasRuns) return HomeworkStatus.NoRun;
+
+            var hasPassed = await _context.CodingHomeworkRuns.AsNoTracking()
+                .AnyAsync(homRun => homRun.CodingHomework.Id == homework.Id && homRun.User.Id == user.Id &&
+                    _context.CodingHomeworkTestRuns
+                        .Where(testRun => testRun.CodingHomeworkRunId == homRun.Id)
+                        .All(testRun => testRun.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed));
+            return hasPassed ? HomeworkStatus.Passed : HomeworkStatus.Failed;
+        }
+
+        private async Task<ApplicationUser> GetCurrentUser()
+        {
+            return await _manager.GetUserAsync(HttpContext.User);
         }
     }
 }
