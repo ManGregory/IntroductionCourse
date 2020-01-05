@@ -1,44 +1,73 @@
 ﻿@model IEnumerable<WebLMS.Models.ViewModel.StudentLectureViewModel>
 
-<div class="wrapper">
-    <!-- Sidebar -->
-    <nav id="sidebar">
-        <ul class="list-unstyled components">
-            @foreach (var item in Model)
-            {
-                <li>
-                    <a id="@item.Id" href="#@item.Id" class="lecture-ref" data-id="@item.Id">@item.Title</a>
-                </li>
-            }
-        </ul>
-    </nav>
-    <div id="lecture-content">
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <ul class="list-unstyled components">
+                @foreach (var item in Model)
+                {
+                    <li>
+                        <a id="@item.Id" href="#" class="lecture-ref" data-id="@item.Id">@item.Title</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <div id="lecture-content">
+        </div>
     </div>
-</div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            console.log("ready func")
-            var hash = window.location.hash
-            if (hash !== "") {
-                $("#" + hash.substring(1)).click();
-                setTimeout(function() {
-                    window.scrollTo(0, 0);
-                }, 1);
+            var cookieId = readCookie("lastLecture");
+            if (cookieId !== null || cookieId !== "") {
+                $("#" + cookieId).click();
             }
         });
-        $('.lecture-ref').click(function (e) {            
+
+        $('.lecture-ref').click(function () {            
             var id = $(this).data("id");
-            console.log(id);
+
+            var cookieId = readCookie("lastLecture");
+            if (cookieId !== null || cookieId !== "") {
+                eraseCookie("lastLecture");
+            }
+            createCookie("lastLecture", id, 30);
+
             $('#lecture-content')
                 .load("/StudentsHome/LectureContent", { "lectureId": id },
                     function () {
-                        
                     });
-            setTimeout(function() {
-                    window.scrollTo(0, 0);
-                }, 1);
         });
+
+        function createCookie(name, value, days) {
+            var expires;
+
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toGMTString();
+            } else {
+                expires = "";
+            }
+            document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = encodeURIComponent(name) + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) === ' ')
+                    c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0)
+                    return decodeURIComponent(c.substring(nameEQ.length, c.length));
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            createCookie(name, "", -1);
+        }
     </script>
 }
