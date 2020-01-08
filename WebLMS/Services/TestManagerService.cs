@@ -102,6 +102,10 @@ namespace WebLMS.Services
                     StartTime = result.Value.StartTime,
                     EndTime = result.Value.EndTime
                 };
+                if (result.Value.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.UnknownException)
+                {
+                    testRun.Exception = $"{result.Value.Exception.Message} {Environment.NewLine}{result.Value.Exception.StackTrace}";
+                }
                 _context.Add(testRun);
                 testRuns.Add(testRun);
             };
@@ -127,12 +131,29 @@ namespace WebLMS.Services
             return result;
         }
 
-        private CodingTest GetCodingTest(KeyValuePair<ITestInfo, ITestRunResult> pair)
+        private bool IsPredefinedTest(KeyValuePair<ITestInfo, ITestRunResult> pair)
+        {
+            return
+                pair.Key.IsCompilation ||
+                pair.Value.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Timeout ||
+                pair.Value.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.UnknownException;
+        }
+
+        private string GetPredefinedTestName(KeyValuePair<ITestInfo, ITestRunResult> pair)
+        {
+            if (pair.Key.IsCompilation) return "Compilation";
+            if (pair.Value.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Timeout) return "Timeout";
+            if (pair.Value.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.UnknownException) return "UnknownException";
+
+            throw new InvalidOperationException($"{pair.Key.ToString()}, {pair.Value.ToString()}");
+        }
+
+        private CodingTest GetCodingTest(KeyValuePair<ITestInfo, ITestRunResult> testRun)
         {
             CodingTest codingTest;
-            if (pair.Key.IsCompilation || pair.Value.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Timeout)
+            if (IsPredefinedTest(testRun))
             {
-                string name = pair.Key.IsCompilation ? "Compilation" : "Timeout";
+                string name = GetPredefinedTestName(testRun);
                 codingTest = _context.CodingTests.FirstOrDefault(ct => ct.CodingHomeworkId == _homeworkId && ct.Name == name);
                 if (codingTest == null)
                 {
@@ -144,7 +165,7 @@ namespace WebLMS.Services
             }
             else
             {
-                codingTest = _context.CodingTests.FirstOrDefault(ct => ct.Id == pair.Key.Id);
+                codingTest = _context.CodingTests.FirstOrDefault(ct => ct.Id == testRun.Key.Id);
             }
             return codingTest;
         }

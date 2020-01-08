@@ -12,7 +12,7 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <form class="form-inline">
+        <form class="form-inline" id="sourceCodeForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="HomeworkId" />
             
@@ -47,11 +47,15 @@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
     @{ await Html.RenderPartialAsync("SourceCodeScriptsPartial"); }
     <script>
-        $('#sendSourceCode').click(function () {
+        $('#sendSourceCode').click(function (e) {
+            e.preventDefault();
+            var sourceCode = editor.getValue();
+            if (sourceCode.length < 20 || sourceCode.length > 10000) return;
+
             $("#sendSourceCode").attr("disabled", true);
             $("#sendSourceCode > .spinner-border").removeClass("d-none");
             $('#testResult')
-                .load("/StudentCodingHomework/TestUserSourceCode", { "id": @Model.HomeworkId, "sourceCode": editor.getValue() },
+                .load("/StudentCodingHomework/TestUserSourceCode", { "id": @Model.HomeworkId, "sourceCode": sourceCode },
                     function () {
                         $("#sendSourceCode").attr("disabled", false);
                         $("#sendSourceCode > .spinner-border").addClass("d-none");

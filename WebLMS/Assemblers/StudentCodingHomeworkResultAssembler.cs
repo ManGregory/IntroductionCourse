@@ -25,9 +25,8 @@ namespace WebLMS.Assemblers
                 codingHomeworkResult.IsPassed = false;
                 codingHomeworkResult.IsTimedOut = firstRun.TestRunStatus == TestRunStatus.Timeout;
                 codingHomeworkResult.TimeoutPeriod = Constants.TimeoutPeriod / 1000;
-                codingHomeworkResult.IsUnknownException = firstRun.TestRunStatus == TestRunStatus.UnknownException;
-                // todo: add exception to coding homework test run
-                codingHomeworkResult.ExceptionText = firstRun.Message;
+                codingHomeworkResult.IsUnknownException = firstRun.TestRunStatus == TestRunStatus.UnknownException;                
+                codingHomeworkResult.ExceptionText = firstRun.Exception;
                 codingHomeworkResult.IsCompilationFailed = firstRun.TestRunStatus == TestRunStatus.CompilationFailed;
                 codingHomeworkResult.CompilationErrors = firstRun.Message;
             }

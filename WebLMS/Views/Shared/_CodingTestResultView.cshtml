@@ -16,14 +16,14 @@ else if (@Model.IsUnknownException)
 {
     <p class="text-danger">There was an unknown <strong>exception</strong> during the execution:</p>
     <pre>
-        @Model.ExceptionText
+@Model.ExceptionText
     </pre>
 }
 else if (@Model.IsCompilationFailed)
 {
     <p class="text-danger">The compilation is <strong>failed</strong>, errors:</p>
     <pre>
-        @Model.CompilationErrors
+@Model.CompilationErrors
     </pre>
 }
 else if (@Model.TestRunResults == null || !@Model.TestRunResults.Any())

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,6 +13,8 @@ namespace WebLMS.Models.ViewModel
         public int HomeworkId { get; set; }
         public string Subject { get; set; }
         public string Description { get; set; }
+
+        [StringLength(10000, MinimumLength = 20)]
         public string TemplateCode { get; set; }
         public int AttemptsCount { get; set; }
         public int MaxAttemptsCount { get; set; }

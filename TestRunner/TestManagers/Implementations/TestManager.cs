@@ -51,6 +51,10 @@ namespace TestRunner.TestManagers.Implementations
                     Exception = ex;
                 }
             }
+            catch (Exception ex)
+            {
+                Exception = ex;
+            }
 
             var dict = new Dictionary<ITestInfo, ITestRunResult>();
             if (IsTimedOut)

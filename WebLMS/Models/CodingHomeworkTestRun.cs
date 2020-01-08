@@ -20,6 +20,9 @@ namespace WebLMS.Models
         public DateTime? EndTime { get; set; }
         public bool IsCompilation { get; set; }
 
+        [StringLength(4000)]
+        public string Exception { get; set; }
+
         public virtual CodingHomeworkRun CodingHomeworkRun { get; set; }
         public virtual CodingTest CodingTest { get; set; }
     }
