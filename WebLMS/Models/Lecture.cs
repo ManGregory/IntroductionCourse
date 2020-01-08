@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebLMS.Models
 {
@@ -11,7 +8,9 @@ namespace WebLMS.Models
     {
         public int Id { get; set; }
         public int Number { get; set; }
+        [StringLength(150, MinimumLength = 5)]
         public string Subject { get; set; }
+        [StringLength(5000, MinimumLength = 5)]
         public string Description { get; set; }
         [DataType("Date")]
         public DateTime? AvailableFrom { get; set; }
