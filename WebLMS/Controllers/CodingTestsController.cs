@@ -24,7 +24,10 @@ namespace WebLMS
         // GET: CodingTests
         public async Task<IActionResult> Index()
         {
-            var lMSDbContext = _context.CodingTests.Include(c => c.CodingHomework);
+            var lMSDbContext = _context.CodingTests
+                .AsNoTracking()
+                .Include(c => c.CodingHomework)
+                .Where(c => c.Name != "Compilation" && c.Name != "Timeout" && c.Name != "UnknownException");
             return View(await lMSDbContext.ToListAsync());
         }
 

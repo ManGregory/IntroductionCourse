@@ -16,12 +16,6 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InputParameters)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ExpectedResult)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.CodingHomework)
             </th>
             <th></th>
@@ -34,17 +28,11 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InputParameters)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpectedResult)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CodingHomework.Id)
+                @Html.DisplayFor(modelItem => item.CodingHomework.Subject) |
+                @item.CodingHomework.Id
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>

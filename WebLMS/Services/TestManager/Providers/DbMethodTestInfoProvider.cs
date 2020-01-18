@@ -28,7 +28,8 @@ namespace WebLMS.TestManager.Providers
             var codingTests = await _context.CodingTests
                 .Where(codingTest => codingTest.CodingHomeworkId == _homeworkId && 
                     codingTest.Name != "Compilation" &&
-                    codingTest.Name != "Timeout")
+                    codingTest.Name != "Timeout" &&
+                    codingTest.Name != "UnknownException")
                 .ToListAsync();
             return codingTests.Select(codingTest => ConvertFunction(codingTest));
         }

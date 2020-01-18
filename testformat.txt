@@ -2,18 +2,27 @@
 
 InputParameteres
 {
-    types: ["int"],
-    values: ["5"],
-    steps: [
+    "types":[],
+    "values":[],
+    "steps": 
+    [
         {
-            name: "Step 1 - check",
-            input: ["1", "2"],
-            output: ["3", "9"]
-        },
+            "name": "Step 1",
+            "input": ["Andrey", "25"],
+            "output": ["Andrey, age - 25"]
+        }
+    ]
+}
+
+{
+    "types":[],
+    "values":[],
+    "steps": 
+    [
         {
-            name: "Step 2 - check",
-            input: ["Vasya"],
-            output: ["Hello, Vasya"]
-        },        
+            "name": "Step 1",
+            "input": [],
+            "output": ["Hello, world"]
+        }
     ]
 }
