@@ -32,7 +32,9 @@ steps:
   displayName: 'Generate Migration Scripts'
   inputs:
     projectpath: WebLMS
+    startupprojectpath: WebLMS
     databasecontexts: LMSDbContext
+    installdependencies: true
 
 - task: DotNetCoreCLI@2
   displayName: Test
