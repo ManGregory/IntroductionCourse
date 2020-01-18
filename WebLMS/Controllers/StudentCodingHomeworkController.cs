@@ -67,6 +67,7 @@ namespace WebLMS.Controllers
                     .Where(run => run.CodingHomeworkRunId == lastRun.Id)
                     .Include(run => run.CodingTest)
                     .Include(run => run.CodingTest.CodingHomework)
+                    .OrderBy(run => run.EndTime)
                     .ToListAsync();
             }
             return StudentCodingHomeworkResultAssembler.Assemble(lastTestRuns);
