@@ -35,6 +35,7 @@ steps:
     startupprojectpath: WebLMS
     databasecontexts: LMSDbContext
     installdependencies: true
+    eftoolversion: 3.1.0
 
 - task: DotNetCoreCLI@2
   displayName: Test
