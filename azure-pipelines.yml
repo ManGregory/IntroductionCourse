@@ -33,7 +33,6 @@ steps:
   inputs:
     projectpath: WebLMS
     databasecontexts: LMSDbContext
-    installdependencies: true
 
 - task: DotNetCoreCLI@2
   displayName: Test
