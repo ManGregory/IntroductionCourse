@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <p>Attempts: <span id="attemptsCount">@Model.AttemptsCount</span>/<span id="maxAttemptsCount">@Model.MaxAttempts</span></p>
+        <p>Попытки: <span id="attemptsCount">@Model.AttemptsCount</span>/<span id="maxAttemptsCount">@Model.MaxAttempts</span></p>
     </div>
 </div>
 <div class="row">
@@ -35,7 +35,7 @@
         </form>
         <div id="lastAttempt">
             <br />
-            <h5>Last attempt: </h5>
+            <h5>Результат последней попытки: </h5>
             <div id="testResult">
                 @{ await Html.RenderPartialAsync("_CodingTestResultView", Model.LastAttempt); }
             </div>

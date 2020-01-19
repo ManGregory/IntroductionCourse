@@ -11,10 +11,10 @@ namespace WebLMS.Views
         {
             var titlesMap = new Dictionary<HomeworkStatus, string>()
             {
-                [HomeworkStatus.Passed] = "Passed",
-                [HomeworkStatus.Failed] = "Failed",
-                [HomeworkStatus.NoRun] = "No runs",
-                [HomeworkStatus.NoTests] = "No tests"
+                [HomeworkStatus.Passed] = "Успех",
+                [HomeworkStatus.Failed] = "Есть ошибки",
+                [HomeworkStatus.NoRun] = "Не пробовал",
+                [HomeworkStatus.NoTests] = "Нет тестов"
             };
             var badgeClassMap = new Dictionary<HomeworkStatus, string>()
             {

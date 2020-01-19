@@ -7,30 +7,30 @@
     <p>
         <span class="text-danger">Timeout</span>
         <br />
-        Execution of the tests or compilation of your program takes more than @Model.TimeoutPeriod seconds
+        Выполнение тестов или компиляция программы заняла больше @Model.TimeoutPeriod секунд
         <br />
-        Please review your source code, probably there are extra or unncessary call to methods Console.ReadKey or Console.ReadLine
+        Пожалуйста просмотрите исходный код, возможно есть лишние или ненужные вызовы методов Console.ReadKey или Console.ReadLine
     </p>
 }
 else if (@Model.IsUnknownException)
 {
-    <p class="text-danger">There was an unknown <strong>exception</strong> during the execution:</p>
+    <p class="text-danger">Произошла <strong>ошибка</strong> во время выполнения. Отправьте текст ниже преподавателю:</p>
     <pre>
 @Model.ExceptionText
     </pre>
 }
 else if (@Model.IsCompilationFailed)
 {
-    <p class="text-danger">The compilation is <strong>failed</strong>, errors:</p>
+    <p class="text-danger">Компиляция <strong>неуспешна</strong>, ошибки:</p>
     <pre>
 @Model.CompilationErrors
     </pre>
 }
 else if (@Model.TestRunResults == null || !@Model.TestRunResults.Any())
 {
-    <p class="text-info">No results. 
+    <p class="text-info">Нет результатов. 
     <br />
-    This is either first attempt or there are no tests to run.
+    Это либо первая попытка, либо для этого ДЗ нет тестов
     </p>
 }
 else

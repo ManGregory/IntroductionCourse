@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebLMS.Models.ViewModel
 {
@@ -15,6 +11,7 @@ namespace WebLMS.Models.ViewModel
         public string Description { get; set; }
 
         [StringLength(10000, MinimumLength = 20)]
+        [Display(Name="Код")]
         public string TemplateCode { get; set; }
         public int AttemptsCount { get; set; }
         public int MaxAttemptsCount { get; set; }

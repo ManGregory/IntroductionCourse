@@ -23,6 +23,7 @@ namespace WebLMS.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
         }
 
+        [Display(Name="Логин")]
         public string Username { get; set; }
 
         [TempData]
@@ -37,10 +38,10 @@ namespace WebLMS.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
 
-            [Display(Name = "My name")]
+            [Display(Name = "ФИО")]
             public string StudentName { get; set; }
 
-            [Display(Name = "My group")]
+            [Display(Name = "Номер группы")]
             public string GroupName { get; set; }
         }
 

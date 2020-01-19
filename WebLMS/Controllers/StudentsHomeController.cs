@@ -72,7 +72,8 @@ namespace WebLMS.Controllers
         private async Task<HomeworkStatus> GetStatus(CodingHomework homework)
         {
             var testsCount = await _context.CodingTests.AsNoTracking()
-                .CountAsync(cod => cod.CodingHomeworkId == homework.Id && cod.Name != "Compilation");
+                .CountAsync(cod => cod.CodingHomeworkId == homework.Id && 
+                                   cod.Name != "Compilation" && cod.Name != "Timeout" && cod.Name != "UnknownException");
             if (testsCount == 0) return HomeworkStatus.NoTests;
 
             var user = await GetCurrentUser();
