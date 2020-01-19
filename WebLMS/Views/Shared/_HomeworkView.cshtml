@@ -13,6 +13,6 @@
         <a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id">@homework.Title</a>
         @Html.HomeworkStatusBadge(@homework.Status)
     </h6>
-    <p>@homework.Description</p>
+    <p>@Html.Raw(homework.Description)</p>
     <hr />
 }

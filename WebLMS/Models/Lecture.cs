@@ -22,7 +22,7 @@ namespace WebLMS.Models
         { 
             get
             {
-                return AvailableFrom.HasValue && AvailableFrom.Value >= DateTime.Now && (!AvailableTo.HasValue || AvailableTo.Value <= DateTime.Now);
+                return AvailableFrom.HasValue && AvailableFrom.Value <= DateTime.Now && (!AvailableTo.HasValue || AvailableTo.Value >= DateTime.Now);
             } 
         }
 
