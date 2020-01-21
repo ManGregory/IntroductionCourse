@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using TestRunner.CommonTypes.Implementations;
 using TestRunner.CommonTypes.Interfaces;
@@ -76,12 +77,26 @@ namespace WebLMS.Services.TestManager
                 {
                     result.Add(Convert.ToBoolean(method.Values[i]));
                 }
+                else if (type == "decimal")
+                {
+                    result.Add(Convert.ToDecimal(NormalizeNumberValue(method.Values[i])));
+                }
+                else if (type == "double")
+                {
+                    result.Add(Convert.ToDouble(NormalizeNumberValue(method.Values[i])));
+                }
                 else if (type == "string")
                 {
                     result.Add(method.Values[i]);
                 }
             }
             return result.ToArray();
+        }
+
+        private static string NormalizeNumberValue(string number)
+        {
+            string separator = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+            return number.Replace(".", separator).Replace(",", separator);
         }
     }
 }
