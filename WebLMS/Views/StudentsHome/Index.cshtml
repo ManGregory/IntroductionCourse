@@ -1,20 +1,32 @@
-﻿@model IEnumerable<WebLMS.Models.ViewModel.StudentLectureViewModel>
+﻿@using System.Security.Claims;
 
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <nav id="sidebar">
-            <ul class="list-unstyled components">
-                @foreach (var item in Model)
-                {
-                    <li>
-                        <a id="@item.Id" href="#" class="lecture-ref" data-id="@item.Id" >@item.Title</a>
-                    </li>
-                }
-            </ul>
-        </nav>
-        <div id="lecture-content">
+@model IEnumerable<WebLMS.Models.ViewModel.StudentLectureViewModel>
+
+@if (User.HasClaim(ClaimTypes.Role, "Administrator"))
+{    
+    <div class="row">
+        <div class="col-md-12">
+            <label for="studentId">Students:</label>
+            <select id="studentId" asp-items="ViewBag.Students"></select>
         </div>
     </div>
+}
+
+<div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <ul class="list-unstyled components">
+            @foreach (var item in Model)
+            {
+                <li>
+                    <a id="@item.Id" href="#" class="lecture-ref" data-id="@item.Id">@item.Title</a>
+                </li>
+            }
+        </ul>
+    </nav>
+    <div id="lecture-content">
+    </div>
+</div>
 
 @section Scripts {
     <script>
@@ -25,8 +37,16 @@
             }
         });
 
-        $('.lecture-ref').click(function () {            
+        $(document.body).on('change',"#studentId",function (e) {
+            var cookieId = readCookie("lastLecture");
+            if (cookieId !== null || cookieId !== "") {
+                $("#" + cookieId).click();
+            }
+        });
+
+        $('.lecture-ref').click(function () {
             var id = $(this).data("id");
+            var email = $("#studentId").val();
 
             var cookieId = readCookie("lastLecture");
             if (cookieId !== null || cookieId !== "") {
@@ -35,7 +55,7 @@
             createCookie("lastLecture", id, 30);
 
             $('#lecture-content')
-                .load("/StudentsHome/LectureContent", { "lectureId": id },
+                .load("/StudentsHome/LectureContent", { "lectureId": id, "email": email },
                     function () {
                     });
         });

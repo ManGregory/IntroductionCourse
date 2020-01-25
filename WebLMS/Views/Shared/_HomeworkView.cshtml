@@ -10,7 +10,7 @@
 @foreach (var homework in Model.StudentHomeworks)
 {
     <h6>
-        <a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id">@homework.Title</a>
+        <a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id" asp-route-email="@Model.Email">@homework.Title</a>
         @Html.HomeworkStatusBadge(@homework.Status)
     </h6>
     <p>@Html.Raw(homework.Description)</p>

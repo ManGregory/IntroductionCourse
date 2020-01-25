@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace WebLMS.Models.ViewModel
 {
@@ -12,5 +9,6 @@ namespace WebLMS.Models.ViewModel
         public string Description { get; set; }
         public bool IsAvailable { get; set; }
         public IEnumerable<StudentHomeworkViewModel> StudentHomeworks { get; set; }
+        public string Email { get; set; }
     }
 }

@@ -5,6 +5,15 @@
 <p>@Html.Raw(Model.Description)</p>
 <hr />
 
+@if (User.IsInRole("Administrator"))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p>@Model.UserEmail</p>
+        </div>
+    </div>
+}
+
 <div class="row">
     <div class="col-md-12">
         <p>Попытки: <span id="attemptsCount">@Model.AttemptsCount</span>/<span id="maxAttemptsCount">@Model.MaxAttempts</span></p>
@@ -27,7 +36,7 @@
 
             <div class="form-group">
                 <button id="sendSourceCode" class="btn btn-primary"
-                        @(Model.ExceededAttempts || Model.LastAttempt.IsPassed ? "disabled=true" : "")>
+                        @(Model.ExceededAttempts || Model.LastAttempt.IsPassed || !string.IsNullOrEmpty(Model.UserEmail) ? "disabled=true" : "")>
                     Отправить на проверку
                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                 </button>
