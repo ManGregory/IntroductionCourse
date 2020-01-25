@@ -91,19 +91,6 @@ namespace WebLMS.Controllers
             return PartialView("_HomeworkView", model);
         }
 
-        /*private async Task<bool> IsUserCanViewOtherUsers(string userEmail)
-        {
-            if (string.IsNullOrEmpty(userEmail)) return true;
-
-            return await IsCurrentUserAdmin();            
-        }
-
-        private async Task<bool> IsCurrentUserAdmin()
-        {
-            var user = await GetCurrentUser();
-            return await _manager.IsInRoleAsync(user, "Administrator");
-        }*/
-
         private async Task<HomeworkStatus> GetStatus(CodingHomework homework, string userEmail)
         {
             var testsCount = await _context.CodingTests.AsNoTracking()
@@ -123,16 +110,5 @@ namespace WebLMS.Controllers
                         .All(testRun => testRun.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed));
             return hasPassed ? HomeworkStatus.Passed : HomeworkStatus.Failed;
         }
-
-        /*private async Task<ApplicationUser> GetUser(string userEmail)
-        {
-            if (string.IsNullOrEmpty(userEmail)) return await GetCurrentUser();
-            return await _manager.FindByEmailAsync(userEmail);
-        }
-
-        private async Task<ApplicationUser> GetCurrentUser()
-        {
-            return await _manager.GetUserAsync(HttpContext.User);
-        }*/
     }
 }
