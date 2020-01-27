@@ -64,17 +64,21 @@ namespace WebLMS.Controllers
             var lecture = _context.Lectures.AsNoTracking().FirstOrDefault(lec => lec.Id == lectureId);
             if (lecture == null) return NotFound();
 
-            var homeworks = await _context.CodingHomeworks.AsNoTracking()
-                .Where(homework => homework.LectureId == lectureId).ToListAsync();
-
             var model = new StudentLectureViewModel()
             {
                 Id = lecture.Id,
                 Title = lecture.Title,
                 Description = lecture.Description,
                 IsAvailable = lecture.IsAvailable,
+                AvailableFrom = lecture.AvailableFrom ?? DateTime.Today,
                 Email = email
             };
+
+            if (!lecture.IsAvailable) return PartialView("_HomeworkView", model); 
+
+            var homeworks = await _context.CodingHomeworks.AsNoTracking()
+                .Where(homework => homework.LectureId == lectureId).ToListAsync();
+            
             var studentHomeworks = new List<StudentHomeworkViewModel>();
             foreach (var hom in homeworks)
             {

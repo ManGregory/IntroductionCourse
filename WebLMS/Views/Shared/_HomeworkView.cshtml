@@ -2,17 +2,25 @@
 @using WebLMS.Views;
 @model StudentLectureViewModel
 
-<h3>@Model.Title</h3>
-<hr />
-<p>@Html.Raw(Model.Description)</p>
-
-<h5>Домашние задания</h5>
-@foreach (var homework in Model.StudentHomeworks)
+@if (!Model.IsAvailable)
 {
-    <h6>
-        <a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id" asp-route-email="@Model.Email">@homework.Title</a>
-        @Html.HomeworkStatusBadge(@homework.Status)
-    </h6>
-    <p>@Html.Raw(homework.Description)</p>
+    <p>Лекция будет доступна с @Model.AvailableFrom.Date.ToShortDateString()</p>
+}
+else
+{
+    <h3>@Model.Title</h3>
     <hr />
+    <p>@Html.Raw(Model.Description)</p>
+
+
+    <h5>Домашние задания</h5>
+    @foreach (var homework in Model.StudentHomeworks)
+    {
+        <h6>
+            <a asp-area="" asp-controller="StudentCodingHomework" asp-action="Index" asp-route-id="@homework.Id" asp-route-email="@Model.Email">@homework.Title</a>
+            @Html.HomeworkStatusBadge(@homework.Status)
+        </h6>
+        <p>@Html.Raw(homework.Description)</p>
+        <hr />
+    }
 }
