@@ -64,17 +64,17 @@ namespace WebLMS.Controllers
             var lecture = _context.Lectures.AsNoTracking().FirstOrDefault(lec => lec.Id == lectureId);
             if (lecture == null) return NotFound();
 
-            var model = new StudentLectureViewModel()
+            var lectureModel = new StudentLectureViewModel()
             {
                 Id = lecture.Id,
                 Title = lecture.Title,
                 Description = lecture.Description,
-                IsAvailable = lecture.IsAvailable,
+                IsAvailable = lecture.IsAvailable || await _identityUtils.IsCurrentUserAdmin(),
                 AvailableFrom = lecture.AvailableFrom ?? DateTime.Today,
                 Email = email
             };
 
-            if (!lecture.IsAvailable) return PartialView("_HomeworkView", model); 
+            if (!lectureModel.IsAvailable) return PartialView("_HomeworkView", lectureModel); 
 
             var homeworks = await _context.CodingHomeworks.AsNoTracking()
                 .Where(homework => homework.LectureId == lectureId).ToListAsync();
@@ -91,8 +91,8 @@ namespace WebLMS.Controllers
                     Status = await GetStatus(hom, email)
                 });
             }
-            model.StudentHomeworks = studentHomeworks;
-            return PartialView("_HomeworkView", model);
+            lectureModel.StudentHomeworks = studentHomeworks;
+            return PartialView("_HomeworkView", lectureModel);
         }
 
         private async Task<HomeworkStatus> GetStatus(CodingHomework homework, string userEmail)

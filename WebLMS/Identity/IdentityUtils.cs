@@ -23,7 +23,7 @@ namespace WebLMS.Identity
             return await IsCurrentUserAdmin();
         }
 
-        private async Task<bool> IsCurrentUserAdmin()
+        public async Task<bool> IsCurrentUserAdmin()
         {
             var user = await GetCurrentUser();
             return await UserManager.IsInRoleAsync(user, "Administrator");
