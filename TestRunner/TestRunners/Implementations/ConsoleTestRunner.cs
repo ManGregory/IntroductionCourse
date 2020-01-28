@@ -82,6 +82,7 @@ namespace TestRunner.TestRunners.Implementations
             {
                 Name = step.Name,
                 Expected = step.Output,
+                Input = step.Input,
                 Actual = actual,
                 IsPassed = isPassed
             };

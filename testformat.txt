@@ -26,3 +26,25 @@ InputParameteres
         }
     ]
 }
+
+{
+    "types":[],
+    "values":[],
+    "steps": 
+    [
+        {
+            "name": "Step 1",
+            "input": [],
+            "output": ["  *", " * *", "* * *"] 
+        }
+    ]
+}
+
+{
+    "types":["int", "int", "int", "bool", "decimal", "decimal"],
+    "values":["100000", "10", "24", "true", "5000.5", "0.95"]
+}
+
+{ "types": ["bool"], "values": ["false"] }
+
+{ "types": ["int", "int"], "values": ["2001", "1"] }

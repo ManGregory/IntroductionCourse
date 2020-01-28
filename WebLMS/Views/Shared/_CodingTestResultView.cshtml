@@ -39,13 +39,13 @@ else
     {
         @if (run.TestType == CodingTestType.Method)
         {
-            <p class="@(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "text-success" : "text-danger")">
-                @run.TestName is <strong>@run.TestRunStatus.ToString()</strong>, 
-                Input parameters: @string.Join(", ", run.InputParams)
+            <p>
+                <h5><span class="badge @(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "badge-success" : "badge-danger")">@run.TestName is @run.TestRunStatus.ToString()</span></h5> 
+                <b>Input parameters: </b>@string.Join(", ", run.InputParams)
                 @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Failed)
                 {
                     <br />
-                    <span>Expected: @run.Expected, Actual: @run.Actual</span>
+                    <span><b>Expected: </b>@run.Expected, <b>Actual: </b>@run.Actual</span>
                 }
                 else @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.TargetException)
                 {
@@ -55,30 +55,50 @@ else
             </p>
         }
         else
-        {
-            <p class="@(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "text-success" : "text-danger")">
-                @run.TestName is <strong>@run.TestRunStatus.ToString()</strong>,
-                Input parameters: @string.Join(", ", run.InputParams)
-                @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Failed)
+        {            
+            <h5><span class="badge @(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "badge-success" : "badge-danger")">@run.TestName is @run.TestRunStatus.ToString()</span></h5>
+            @if (run.InputParams?.Any() ?? false)
+            {
+                <span>, Input parameters: @string.Join(", ", run.InputParams)</span>
+            }
+
+            @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Failed)
+            {
+                @if (run.StepResults.Count() == 1)
                 {
-                    <br />
-                    <span>Steps:</span>
+                    var stepResult = run.StepResults.First();
+                    @if (stepResult.Input?.Any() ?? false)
+                    {
+                        <span><b>Input</b> - [@string.Join(", ", stepResult.Input.Select(inp => $"\"{inp}\""))]; </span>
+                    }
+
+                    <span><b>Expected</b> - [@string.Join(", ", stepResult.Expected.Select(exp => $"\"{exp}\""))];</span>
+                    <span><b>Actual</b> - [@string.Join(", ", stepResult.Actual.Select(act => $"\"{act}\""))];</span>
+                }
+                else
+                { 
                     <ul>
                         @foreach (var stepResult in @run.StepResults)
                         {
-                            <li class="@(stepResult.IsPassed ? "text-success" : "text-danger")">
+                            <li>
                                 @stepResult.Name is @(stepResult.IsPassed ? "Passed" : "Failed")
-                                Expected: (@string.Join(", ", stepResult.Expected)), Actual: (@string.Join(", ", stepResult.Actual))
+                                <br />
+                                @if (stepResult.Input?.Any() ?? false)
+                                {
+                                    <span><b>Input</b> - [@string.Join(", ", stepResult.Input.Select(inp => $"\"{inp}\""))]; </span>
+                                }
+                                <span><b>Expected</b> - </span>[@string.Join(", ", stepResult.Expected.Select(exp => $"\"{exp}\""))];
+                                <span><b>Actual</b> - </span>[@string.Join(", ", stepResult.Actual.Select(act => $"\"{act}\""))];
                             </li>
                         }
                     </ul>
                 }
-                else @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.TargetException)
-                {
-                    <br />
-                    <span>There was an <strong>exception</strong> during execution of the test.</span>
-                }
-            </p>
+            }
+            else @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.TargetException)
+            {
+                <br />
+                <span>There was an <strong>exception</strong> during execution of the test.</span>
+            }            
         }
     }
 }
