@@ -48,9 +48,13 @@ namespace TestRunner.TestRunners.Implementations
 
         protected override bool IsTestPassed(ITestInfo test, ITestRunResult testRunResult)
         {
-            IConsoleTestInfo consoleTestInfo = (IConsoleTestInfo) test;
-            IEnumerable<string> allActualOuput = testRunResult.ActualResult?.ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries) 
-                ?? new string[0];
+            var consoleTestInfo = (IConsoleTestInfo) test;
+
+            string actualResult = testRunResult.ActualResult == null
+                ? string.Empty
+                : testRunResult.ActualResult.ToString().TrimEnd().Replace("\n", Environment.NewLine);
+
+            IEnumerable<string> allActualOuput = actualResult.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             var actualOutputStack = new Stack<string>(allActualOuput
                 .Where(output => !output.StartsWith("*") && !string.IsNullOrWhiteSpace(output.Trim()))
                 .Reverse());

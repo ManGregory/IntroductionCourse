@@ -28,77 +28,102 @@ else if (@Model.IsCompilationFailed)
 }
 else if (@Model.TestRunResults == null || !@Model.TestRunResults.Any())
 {
-    <p class="text-info">Нет результатов. 
-    <br />
-    Это либо первая попытка, либо для этого ДЗ нет тестов
+    <p class="text-info">
+        Нет результатов.
+        <br />
+        Это либо первая попытка, либо для этого ДЗ нет тестов
     </p>
 }
 else
 {
     @foreach (var run in @Model.TestRunResults)
     {
+        string statusForUser = run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "Пройден" : "Провален";
         @if (run.TestType == CodingTestType.Method)
         {
             <p>
-                <h5><span class="badge @(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "badge-success" : "badge-danger")">@run.TestName is @run.TestRunStatus.ToString()</span></h5> 
-                <b>Input parameters: </b>@string.Join(", ", run.InputParams)
+                <h5><span class="badge @(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "badge-success" : "badge-danger")">@run.TestName @statusForUser</span></h5>
+                <b>Исходные аргументы для функции: </b>@string.Join(", ", run.InputParams)
                 @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Failed)
                 {
                     <br />
-                    <span><b>Expected: </b>@run.Expected, <b>Actual: </b>@run.Actual</span>
+                    <span><b>Ожидаемый результат: </b>@run.Expected, <b>Фактический результат: </b>@run.Actual</span>
                 }
                 else @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.TargetException)
                 {
                     <br />
-                    <span>There was an <strong>exception</strong> during execution of the test.</span>
+                    <span>Произошло <strong>исключение</strong> во время выполнения теста. Проверьте что ваш код работает корректно при заданных исходных аргументах функции.</span>
                 }
             </p>
         }
         else
-        {            
-            <h5><span class="badge @(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "badge-success" : "badge-danger")">@run.TestName is @run.TestRunStatus.ToString()</span></h5>
+        {
+            <h5><span class="badge @(run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Passed ? "badge-success" : "badge-danger")">@run.TestName @statusForUser</span></h5>
             @if (run.InputParams?.Any() ?? false)
             {
-                <span>, Input parameters: @string.Join(", ", run.InputParams)</span>
+                <span>Исходные аргументы для функции: @string.Join(", ", run.InputParams)</span>
             }
 
             @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.Failed)
             {
                 @if (run.StepResults.Count() == 1)
                 {
-                    var stepResult = run.StepResults.First();
-                    @if (stepResult.Input?.Any() ?? false)
-                    {
-                        <span><b>Input</b> - [@string.Join(", ", stepResult.Input.Select(inp => $"\"{inp}\""))]; </span>
-                    }
+                    <div class="row">
 
-                    <span><b>Expected</b> - [@string.Join(", ", stepResult.Expected.Select(exp => $"\"{exp}\""))];</span>
-                    <span><b>Actual</b> - [@string.Join(", ", stepResult.Actual.Select(act => $"\"{act}\""))];</span>
+                        @{
+                            var stepResult = run.StepResults.First();
+                            @if (stepResult.Input?.Any() ?? false)
+                            {
+                                <div class="col-md-3">
+                                    <p><b>Что пользователь ввел</b></p>
+                                    <pre>@string.Join(Environment.NewLine, stepResult.Input)</pre>
+                                </div>
+                            }
+                        }
+
+                        <div class="col-md-3">
+                            <p><b>Ожидаемый вывод на экран</b></p>
+                            <pre>@string.Join(Environment.NewLine, stepResult.Expected)</pre>
+                        </div>
+                        <div class="col-md-3">
+                            <p><b>Фактический вывод на экран</b></p>
+                            <pre>@string.Join(Environment.NewLine, stepResult.Actual)</pre>
+                        </div>
+                    </div>
                 }
                 else
-                { 
-                    <ul>
+                {
+                    <div>
                         @foreach (var stepResult in @run.StepResults)
                         {
-                            <li>
-                                @stepResult.Name is @(stepResult.IsPassed ? "Passed" : "Failed")
-                                <br />
+                            <p><b>@stepResult.Name @(stepResult.IsPassed ? "Пройден" : "Провален")</b></p>
+                            <div class="row">
                                 @if (stepResult.Input?.Any() ?? false)
                                 {
-                                    <span><b>Input</b> - [@string.Join(", ", stepResult.Input.Select(inp => $"\"{inp}\""))]; </span>
+                                    <div class="col-md-3">
+                                        <p><b>Что пользователь ввел</b></p>
+                                        <pre>@string.Join(Environment.NewLine, stepResult.Input)</pre>
+                                    </div>
                                 }
-                                <span><b>Expected</b> - </span>[@string.Join(", ", stepResult.Expected.Select(exp => $"\"{exp}\""))];
-                                <span><b>Actual</b> - </span>[@string.Join(", ", stepResult.Actual.Select(act => $"\"{act}\""))];
-                            </li>
+                                <div class="col-md-3">
+                                    <p><b>Ожидаемый вывод на экран</b></p>
+                                    <pre>@string.Join(Environment.NewLine, stepResult.Expected)</pre>
+                                </div>
+                                <div class="col-md-3">
+                                    <p><b>Фактический вывод на экран</b></p>
+                                    <pre>@string.Join(Environment.NewLine, stepResult.Actual)</pre>
+                                </div>
+                            </div>
+                            <hr />
                         }
-                    </ul>
+                    </div>
                 }
             }
             else @if (run.TestRunStatus == TestRunner.CommonTypes.TestRunStatus.TargetException)
             {
                 <br />
-                <span>There was an <strong>exception</strong> during execution of the test.</span>
-            }            
+                <span>Произошло <strong>исключение</strong> во время выполнения теста. Проверьте что ваш код работает корректно при заданных исходных аргументах функции.</span>
+            }
         }
     }
 }
