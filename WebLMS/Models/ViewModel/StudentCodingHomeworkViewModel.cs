@@ -10,6 +10,7 @@ namespace WebLMS.Models.ViewModel
         public string Subject { get; set; }
         public string Description { get; set; }
         public string UserEmail { get; set; }
+        public string HomeworkType { get; set; }
 
         [StringLength(10000, MinimumLength = 20)]
         [Display(Name="Код")]

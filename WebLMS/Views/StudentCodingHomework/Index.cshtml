@@ -1,6 +1,6 @@
 ﻿@model WebLMS.Models.ViewModel.StudentCodingHomeworkViewModel
 
-<h2>@Model.Subject</h2>
+<h2>@Model.Subject <span class="badge @(Model.HomeworkType == "Функция" ? "badge-primary" : "badge-dark")">@Model.HomeworkType</span></h2>
 <hr />
 <p>@Html.Raw(Model.Description)</p>
 <hr />

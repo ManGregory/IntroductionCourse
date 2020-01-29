@@ -51,6 +51,7 @@ namespace WebLMS.Controllers
                 Subject = codingHomework.Subject,
                 Description = codingHomework.Description,
                 MaxAttemptsCount = codingHomework.MaxAttempts,
+                HomeworkType = codingHomework.CodingTestType == CodingTestType.Method ? "Функция" : "Консоль",
                 UserEmail = string.IsNullOrEmpty(email) ? string.Empty : $"{user.Email} - {user.StudentName}"
             };
             codingHomeworkViewModel.TemplateCode = await GetTemplateCode(codingHomework, email);
