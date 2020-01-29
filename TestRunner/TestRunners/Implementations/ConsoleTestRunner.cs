@@ -52,9 +52,9 @@ namespace TestRunner.TestRunners.Implementations
 
             string actualResult = testRunResult.ActualResult == null
                 ? string.Empty
-                : testRunResult.ActualResult.ToString().TrimEnd().Replace("\n", Environment.NewLine);
+                : testRunResult.ActualResult.ToString();
 
-            IEnumerable<string> allActualOuput = actualResult.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            IEnumerable<string> allActualOuput = actualResult.Split(new string[] { Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
             var actualOutputStack = new Stack<string>(allActualOuput
                 .Where(output => !output.StartsWith("*") && !string.IsNullOrWhiteSpace(output.Trim()))
                 .Reverse());
