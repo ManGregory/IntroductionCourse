@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TestRunner.CommonTypes;
@@ -20,7 +19,7 @@ namespace WebLMS.Assemblers
 
             var runCount = testRuns.Count();
             var firstRun = testRuns.First();
-            if (runCount == 1)
+            if (runCount == 1 || testRuns.Any(run => run.TestRunStatus == TestRunStatus.UnknownException))
             {
                 codingHomeworkResult.IsPassed = false;
                 codingHomeworkResult.IsTimedOut = firstRun.TestRunStatus == TestRunStatus.Timeout;
