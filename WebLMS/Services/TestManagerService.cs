@@ -118,7 +118,7 @@ namespace WebLMS.Services
             string result = string.Empty;
             if (codingTestType == CodingTestType.Method)
             {
-                result = pair.Value.ActualResult?.ToString() ?? string.Empty;
+                result = pair.Value.ActualResult.ToHumanView();
             }
             else
             {

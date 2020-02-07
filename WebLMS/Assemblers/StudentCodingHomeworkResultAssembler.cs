@@ -6,6 +6,7 @@ using TestRunner.CommonTypes.Implementations;
 using WebLMS.Common;
 using WebLMS.Models;
 using WebLMS.Models.ViewModel;
+using WebLMS.Services;
 using WebLMS.Services.TestManager;
 
 namespace WebLMS.Assemblers
@@ -58,12 +59,12 @@ namespace WebLMS.Assemblers
             if (run.CodingTest.CodingHomework.CodingTestType == CodingTestType.Method)
             {
                 var testInfo = (MethodTestInfo) JsonTypesConverter.ConvertToMethodTest(run.CodingTest);
-                inputParameteres.AddRange(testInfo.InputParameters.Select(param => param.ToString()));
+                inputParameteres.AddRange(testInfo.InputParameters.Select(param => param.ToHumanView()));
             }
             else
             {
                 var testInfo = (ConsoleTestInfo) JsonTypesConverter.ConvertToConsoleTest(run.CodingTest);
-                inputParameteres.AddRange(testInfo.ConsoleTest.MethodInputParameteres.Select(param => param.ToString()));
+                inputParameteres.AddRange(testInfo.ConsoleTest.MethodInputParameteres.Select(param => param.ToHumanView()));
             }
             return inputParameteres;
         }
@@ -88,7 +89,7 @@ namespace WebLMS.Assemblers
             if (run.CodingTest.CodingHomework.CodingTestType == CodingTestType.Method)
             {
                 var testInfo = (MethodTestInfo)JsonTypesConverter.ConvertToMethodTest(run.CodingTest);
-                expected = testInfo.ExpectedResult.ToString();
+                expected = testInfo.ExpectedResult.ToHumanView();
             }
             return expected;
         }

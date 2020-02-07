@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using TestRunner.CommonTypes.Implementations;
 using TestRunner.CommonTypes.Interfaces;
@@ -85,6 +86,24 @@ namespace WebLMS.Services.TestManager
                 else if (type == "string")
                 {
                     result.Add(method.Values[i]);
+                }
+                else if (type == "intarray")
+                {
+                    var arr = method.Values[i].Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                    var intArr = arr.Select(a => Convert.ToInt32(a)).ToArray();
+                    result.Add(intArr);
+                }
+                else if (type == "doublearray")
+                {
+                    var arr = method.Values[i].Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                    var doubleArr = arr.Select(a => Convert.ToDouble(NormalizeNumberValue(a))).ToArray();
+                    result.Add(doubleArr);
+                }
+                else if (type == "decarray")
+                {
+                    var arr = method.Values[i].Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                    var decArr = arr.Select(a => Convert.ToDecimal(NormalizeNumberValue(a))).ToArray();
+                    result.Add(decArr);
                 }
             }
             return result.ToArray();

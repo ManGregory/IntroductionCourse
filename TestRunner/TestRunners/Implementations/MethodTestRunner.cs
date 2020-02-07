@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
 using System.Reflection;
 using System.Text;
 using TestRunner.CommonTypes;
@@ -28,7 +27,29 @@ namespace TestRunner.TestRunners.Implementations
 
         protected override bool IsTestPassed(ITestInfo test, ITestRunResult testRunResult)
         {
-            return Equals(testRunResult.ActualResult, test.ExpectedResult);
+            var resultType = test.ExpectedResult.GetType();
+            return resultType.IsArray 
+                ? CompareArrays(testRunResult.ActualResult, test.ExpectedResult)
+                : Equals(testRunResult.ActualResult, test.ExpectedResult);
+        }
+
+        private bool CompareArrays(object actualResult, object expectedResult)
+        {
+            bool areEqual = false;
+            var resultType = expectedResult.GetType();
+            if (resultType.GetElementType() == typeof(int))
+            {
+                areEqual = Enumerable.SequenceEqual((int[])actualResult, (int[])expectedResult);
+            }
+            else if (resultType.GetElementType() == typeof(double))
+            {
+                areEqual = Enumerable.SequenceEqual((double[])actualResult, (double[])expectedResult);
+            }
+            else if (resultType.GetElementType() == typeof(decimal))
+            {
+                areEqual = Enumerable.SequenceEqual((decimal[])actualResult, (decimal[])expectedResult);
+            }
+            return areEqual;
         }
     }
 }
