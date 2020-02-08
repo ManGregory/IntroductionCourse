@@ -55,7 +55,9 @@ namespace TestRunner.Compilers.Implementations
                         diagnostic.IsWarningAsError ||
                         diagnostic.Severity == DiagnosticSeverity.Error);
 
-                    CompilationErrors = new List<string>(failures.Select(diagnostic => $"\t{diagnostic.Id}: {diagnostic.GetMessage()}"));
+                    Func<Location, string> errorPosFunc = (Location location) => $"(строка: {location.GetMappedLineSpan().EndLinePosition.Line + 1}, столбец: {location.GetMappedLineSpan().EndLinePosition.Character})";
+
+                    CompilationErrors = new List<string>(failures.Select(diagnostic => $"\t{diagnostic.Id} {errorPosFunc(diagnostic.Location)} : {diagnostic.GetMessage()}"));
                 }
                 else
                 {

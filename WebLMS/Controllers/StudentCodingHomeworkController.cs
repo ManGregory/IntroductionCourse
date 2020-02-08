@@ -97,6 +97,13 @@ namespace WebLMS.Controllers
             return PartialView("_CodingTestResultView", homeworkResult);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> RestoreTemplate(int id)
+        {
+            var codingHomework = await _context.CodingHomeworks.AsNoTracking().FirstOrDefaultAsync(homework => homework.Id == id);
+            return new JsonResult(codingHomework?.TemplateCode ?? string.Empty);
+        }
+
         private async Task<int> GetAttemptsCount(CodingHomework codingHomework, string email)
         {
             var user = await _identityUtils.GetUser(email);

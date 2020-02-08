@@ -40,6 +40,11 @@
                     Отправить на проверку
                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                 </button>
+                <button id="restoreTemplate" class="mx-2 btn btn-warning"
+                        @(Model.ExceededAttempts || Model.LastAttempt.IsPassed || !string.IsNullOrEmpty(Model.UserEmail) ? "disabled=true" : "")>
+                    Восстановить шаблон
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
             </div>
         </form>
         <div id="lastAttempt">
@@ -62,11 +67,14 @@
             if (sourceCode.length < 20 || sourceCode.length > 10000) return;
 
             $("#sendSourceCode").attr("disabled", true);
+            $("#restoreTemplate").attr("disabled", true);
             $("#sendSourceCode > .spinner-border").removeClass("d-none");
+
             $('#testResult')
                 .load("/StudentCodingHomework/TestUserSourceCode", { "id": @Model.HomeworkId, "sourceCode": sourceCode },
                     function () {
                         $("#sendSourceCode").attr("disabled", false);
+                        $("#restoreTemplate").attr("disabled", false);
                         $("#sendSourceCode > .spinner-border").addClass("d-none");
                         var attemptsStr = $("#attemptsCount").text();
                         var attempts = parseInt(attemptsStr) + 1;
@@ -76,5 +84,30 @@
                         $("#attemptsCount").text(attempts);
                     });
         });
+        $('#restoreTemplate').click(function (e) {
+            e.preventDefault();
+            var wantRestore = confirm("Записанный код будет заменен на шаблон по умолчанию. Продолжить? ");
+            if (wantRestore) {
+                $("#sendSourceCode").attr("disabled", true);
+                $("#restoreTemplate").attr("disabled", true);
+                $("#restoreTemplate > .spinner-border").removeClass("d-none");
+
+                $.ajax({
+                    url: "/StudentCodingHomework/RestoreTemplate",
+                    dateType: "json",
+                    type: "GET",
+                    contentType: "application/json; charset=utf-8",
+                    cache: false,
+                    data: { id: @Model.HomeworkId},
+                    success: function (data) {
+                        $("#sendSourceCode").attr("disabled", false);
+                        $("#restoreTemplate").attr("disabled", false);
+                        $("#restoreTemplate > .spinner-border").addClass("d-none");
+
+                        editor.setValue(data);
+                    }
+                });
+            }
+        }); 
     </script>
 }
