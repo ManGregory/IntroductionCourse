@@ -35,6 +35,8 @@ namespace TestRunner.Compilers.Implementations
             var refPaths = new[] {
                 typeof(System.Object).GetTypeInfo().Assembly.Location,
                 typeof(Console).GetTypeInfo().Assembly.Location,
+                typeof(System.Collections.Generic.Stack<Object>).GetTypeInfo().Assembly.Location,
+                typeof(System.Linq.Enumerable).GetTypeInfo().Assembly.Location,
                 Path.Combine(Path.GetDirectoryName(typeof(System.Runtime.GCSettings).GetTypeInfo().Assembly.Location), "System.Runtime.dll")
             };
             MetadataReference[] references = refPaths.Select(r => MetadataReference.CreateFromFile(r)).ToArray();
